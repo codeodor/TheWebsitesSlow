@@ -5,7 +5,6 @@
     <title>"The Website's Slow" - Tips and Tools for Identifying Performance Bottlenecks</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
 
@@ -35,37 +34,129 @@
 </section>
 
 <section>
+  <h1>Who I am and <br/> why you should listen to me</h1>
+  <!-- 
+      They say when you give a talk, you should let the audience know your qualifications.
+    -->
+</section>
+  
+<section>
     <h3>My name is Sammy Larbi</h3>
     <div class="fragment subsection">
-      <h3>I'm a freelance rubyist</h3>
+      <h3>I'm a freelance Ruby developer</h3>
     </div>
     <div class="fragment subsection">
-      <h3>5-6 years playing with Rails</h3>
+      <h3>6 years playing with Rails</h3>
+      <!-- Until I recently looked it up, apparently I've had 4 for the last 3 -->
     </div>
+    <div class="fragment subsection">
+      <h3>3 projects recently needed P.E.D.</h3>
+    </div>
+    <div class="fragment subsection">
+      (Performance Enhancing Development)
+    </div>
+</section>
+
+<section>
+  <h1>
+    "The Website's Slow"
+  </h1>
+</section>
+
+<section>
+  <img src="images/slow.png" height="500" alt="The customer tells you 'The website is slow'"/>
+  <!-- from iphonetextgenerator.com -->
+</section>
+
+<section>
+  <img src="images/link.png" height="500" alt="You respond, asking which webpage"/>
 </section>
 
 <section class="center-slide">
-  <h2>H2</h2>
+  <h1>Isolated Actions</h1>
+  <!-- The easy stuff -->
+</section>
+
+<section>
+  Rails logs
+  too many queries / query takes too long / loading much more data than is needed
+  https://github.com/josevalim/rails-footnotes vs. maybe https://github.com/pboling/rack-insight
+  https://github.com/flyerhzm/bullet
+  profiling
+  benchmark
+</section>
+
+<section>
+  <img src="images/slow.png" height="500" alt="The customer tells you 'The website is slow'"/>
+  <!-- from iphonetextgenerator.com -->
+</section>
+
+<section>
+  <img src="images/link.png" height="500" alt="You respond, asking which webpage"/>
+</section>
+
+<section>
+  <img src="images/everywhere.png" height="500" alt="The customer says 'everywhere'"/>
 </section>
 
 
+<section class="center-slide">
+  <h1>Server Issues</h1>
+</section>
+<section class="center-slide">
+  <h2>Memory Issues</h2>
+</section>
+<section>
+  top - memory - threadsafe - puma
+</section>
+
+<section class="center-slide">
+  <h2>CPU Issues</h2>
+</section>
+<section class="center-slide">
+  how many processors do you have * average page load times => max throughput
+</section>
+
+<section class="center-slide">
+  <h1>Holistic View</h1>
+</section>
+
+<section class="center-slide">
+  rails log analyzer https://github.com/wvanbergen/request-log-analyzer
+  new relic
+  look at 
+    rails metrics http://blog.plataformatec.com.br/2010/02/rails-metrics-know-what-is-happening-inside-your-rails-3-application/
+    https://github.com/twinturbo/harness with https://github.com/etsy/statsd 
+    harness could be external with stathat or librato
+    or as engine to your rails app https://github.com/nearinfinity/system-metrics
+</section>
+
+<section>
+  Does this stuff fit anywhere?
+  h. does this fit anywhere? https://github.com/duncanbeevers/rails_view_annotator
+  j. system level: http://auxesis.github.com/visage/ with collectd
+  l. http://www.slideshare.net/goncalossilva/pdis2
+</section>
+
+
+<section>
+  <h2>OMG Thanks!</h2>
+  <br/>
+  <ul style="-webkit-transform: rotate(20deg);">
+    <li>Code:<br/><a href="https://github.com/codeodor">https://github.com/codeodor</a></li>
+    <li>Blog:<br/><a href="http://www.codeodor.com">http://www.codeodor.com</a></li>
+    <li>Tweet:<br/><a href="http://twitter.com/codeodor">@codeodor</a></li>
+  </ul>
+</section>
+
+
+<!-- example slides -->
 <section>
   <h2>Shiny happy people...</h2>
   <ul class="list">
     <li>holding hands,</li>
     <li>laughing,</li>
     <li>REM song</li>
-  </ul>
-</section>
-
-
-<section>
-  <h3>Title</h3>
-  <ul class="strengths">
-    <li>Strength 1</li>
-    <li>Strength 2</li>
-    <li>Strength 3</li>
-    <li>To ensure pushing to master pushes to gh-pages too</li>
   </ul>
 </section>
 
@@ -85,24 +176,9 @@
   <cite>- Auturo de quota</cite>
 </section>
 
-<section class="todo-list">
-  <h3>TODOs</h3>
-  <ul>
-    <li>todo 1</li>
-    <li>todo 2</li>
-  </ul>
-</section>
+<!-- end example slides -->
 
 
-<section>
-  <h2>OMG Thanks!</h2>
-  <br/>
-  <ul style="-webkit-transform: rotate(20deg);">
-    <li>Code:<br/><a href="https://github.com/codeodor">https://github.com/codeodor</a></li>
-    <li>Blog:<br/><a href="http://www.codeodor.com">http://www.codeodor.com</a></li>
-    <li>Tweet:<br/><a href="http://twitter.com/codeodor">@codeodor</a></li>
-  </ul>
-</section>
 
 <div id="hearts"></div>
 <script type="text/javascript">

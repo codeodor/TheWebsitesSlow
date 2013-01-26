@@ -4,15 +4,6 @@
   list-style-type: none;
 }
 
-.reveal .todo-list {
-  font-family: 'Permanent Marker', cursive;
-  font-weight: normal;
-  margin-top: 16px;
-  font-size: 72px;
-}
-.reveal .todo-list h3 {
-  margin-bottom: 16px;
-}
 
 
 .reveal ul.list li {
@@ -20,18 +11,6 @@
   line-height: 82px;
 }
 
-.reveal ul.strengths {
-  list-style-type: none;
-}
-.strengths li {
-  float: left;
-  width: 300px;
-}
-
-.resources li {
-  font-size: 72px;
-  line-height: 86px;
-}
 
 section a {
   line-height: 60px;
