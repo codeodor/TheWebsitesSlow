@@ -33,8 +33,11 @@
     </p>
 </section>
 
-<section>
-  <h1>Who I am and <br/> why you should listen to me</h1>
+<section class="center-slide">
+  <h1>Who I am</h1>
+  <p style="color: white;">
+    And why you should listen to me
+  </p>
   <!-- 
       They say when you give a talk, you should let the audience know your qualifications.
     -->
@@ -84,6 +87,32 @@
   https://github.com/flyerhzm/bullet
   profiling
   benchmark
+  with ruby-prof https://github.com/rdp/ruby-prof vs. http://en.wikibooks.org/wiki/Ruby_Programming/Standard_Library/Profiler
+</section>
+
+<section>
+  <img src="images/nplus1.png" alt="n+1 queries in an action" width="900"/>
+</section>
+
+<section>
+  <img src="images/slowquery.png" alt="slow query in an action" width="900"/>
+</section>
+
+<section>
+  <p style="color: white;">
+  Or maybe your app resides on one network 
+  and your DB on another, and you're doing
+  </p>
+  <h2>
+  <code>select * from a_table</code>
+  </h2> 
+  <p style="color: white;">
+    with 
+    many records &amp; a ton of <h2 style="display: inline;">BLOB</h2> 
+    <span style="color: white;">
+      columns you have to transfer
+    </span>
+  </p>
 </section>
 
 <section>
