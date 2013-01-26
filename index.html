@@ -104,12 +104,15 @@
   </ul>
 </section>
 
-<div class="heart" style="position: absolute;"></div>
-<div class="heart" style="position: absolute;"></div>
-<div class="heart" style="position: absolute;"></div>
-<div class="heart" style="position: absolute;"></div>
+<div id="hearts"></div>
 <script type="text/javascript">
   function moveHearts(){
+    var numHearts = 4 + Math.random() * 3;
+
+    $('#hearts').html("");
+    for(var i=0; i < numHearts; i++)
+      $('#hearts').append('<div class="heart" style="position: absolute;"></div>');
+      
     $('.heart').each(function(index, heart){
       $(heart).css('top', Math.random() * 100 + '%');
       $(heart).css('left', Math.random() * 100 + '%');
