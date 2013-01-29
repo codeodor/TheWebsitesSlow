@@ -315,8 +315,56 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 <section class="center-slide">
   <h2>Memory</h2>
 </section>
+
 <section>
-  top - memory - threadsafe - puma
+  <h2 style="margin-bottom: 0;">top</h2>
+  <img src="images/top-swap.png" alt="output of command: top (highlighting the swap memory in use)"/>
+  <h2 style="margin-bottom: 0;">free</h2>
+  <img src="images/free-swap.png" alt="output of command: free (highlighting the swap memory in use)"/>
+  <!-- 
+    here we're highlighting the amount of swap memory in use 
+    when it's high, you're likely maxing out your RAM and swapping 
+    to disk a lot, which is super slow, especially on shared 
+    servers (like the cloud!) when who knows how many people 
+    are trying to access the hard drive at the same time.
+  -->
+</section>
+
+<section>
+  <h2>Per process:</h2>
+  <h3>ps aeux --sort=-vsz</h>
+  <img src="images/ps.png" alt="output of command: ps aeux --sort=-vsz"/>
+  <!-- 
+    In this case, two unicorn worker processes, MySQL and Resque are eating up 
+    almost all of the RAM. There are 4 processors, but we can only utilize two 
+    for incoming web requests, because of the RAM issue.
+    
+    So, you need more RAM, or to consume less
+  -->
+</section>
+
+<section>
+  <!-- most of Rails world is still on having multiple worker processes, but that should change -->
+  <h2>puma</h2>
+  <div class="fragment subsection" style="margin-top: 0;">
+    Uses threads instead of worker processes <!-- which saves a ton of RAM -->
+  </div>
+  <div class="fragment subsection" style="margin-top: 0;">
+    Use JRuby or Rubinius to take full advantage <!-- they use native threads, no GIL -->
+  </div>
+  <div class="fragment subsection" style="margin-top: 0;">
+    <div class="code">
+      <code> 
+      # in config/environments/production.rb<br/>
+      config.threadsafe!
+      </code>
+    </div>
+    <!-- until it's removed or on by default after Rails 4 -->
+  </div>
+  <div align="right">
+    <small><a href="https://github.com/puma/puma">puma @ github</a></small>
+  </div>
+  
 </section>
 
 <section class="center-slide">
