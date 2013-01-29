@@ -53,7 +53,7 @@
       <!-- Until I recently looked it up, apparently I've had 4 for the last 3 -->
     </div>
     <div class="fragment subsection">
-      <h3>3 projects recently needed P.E.D.</h3>
+      <h3>4 projects recently needed P.E.D.</h3>
     </div>
     <div class="fragment subsection">
       (Performance Enhancing Development)
@@ -81,16 +81,6 @@
 </section>
 
 <section>
-  Rails logs
-  too many queries / query takes too long / loading much more data than is needed
-  https://github.com/josevalim/rails-footnotes vs. maybe https://github.com/pboling/rack-insight
-  https://github.com/flyerhzm/bullet
-  profiling
-  benchmark
-  with ruby-prof https://github.com/rdp/ruby-prof vs. http://en.wikibooks.org/wiki/Ruby_Programming/Standard_Library/Profiler
-</section>
-
-<section>
   <img src="images/nplus1.png" alt="n+1 queries in an action" width="900"/>
 </section>
 
@@ -114,6 +104,176 @@
     </span>
   </p>
 </section>
+
+<section class="center-slide">
+  <h2>Measurement</h2>
+  <!--
+    In all of these easy cases, you're looking at Rails log files which contain measurements 
+    of the time queries take to complete or views/partials take to render. In development
+    mode, it's easy to reload a few times to get a baseline, make your changes, and reload
+    a couple of times to see if there is improvement.
+  -->
+</section>
+
+<section>
+  <br/><br/>
+  <h2>Data Anonymity</h2>
+  <div class="fragment subsection">
+    <h2>Visibility</h2>
+  </div>
+  <!-- 
+    But rather than looking through the pollution of the entire log file, there are some tools 
+    to help you make these problems and measurements more visible.
+  --> 
+</section>
+
+
+<section>
+  <h2 style="margin-bottom: 0;">rails-footnotes</h2>
+  <img src="images/railsfootnotes.png" alt="Example of information rails-footnotes provides."/>
+  <br/><br/>
+  <div align="right">
+    <small><a href="https://github.com/josevalim/rails-footnotes">rails-footnotes @ github</a></small>
+  </div>
+  <!--
+    When I first moved to Rails, one of the things I missed most about ColdFusion was all the information
+    they included at the bottom of the page for each request. Rails-footnotes gets me that information, 
+    and includes which line of code in which file generated the query, which is helpful when you have
+    one of a bunch of queries you need to optimize, and don't immediately know where to look.
+  -->
+</section>
+
+<section>
+  <h2 style="margin-bottom: 0;">bullet</h2>
+  <img src="images/bulletnotification.png" alt="Example of information the bullet gem provides."/>
+  <br/><br/>
+  <div align="right">
+    <small><a href="https://github.com/flyerhzm/bullet">bullet @ github</a></small>
+  </div>
+  <!--
+    Bullet can notify us of N+1 query problem, unused eager loading, and the need for a counter cache.
+    I've shown it logging in the javascript console, but it can also use a js alert, growl notification,
+    or log to the Rails log file. 
+  -->
+</section>
+
+<section>
+  <h2>rack-insight</h2>
+  <div align="right">
+    <small><a href="https://github.com/pboling/rack-insight">rack-insight @ github</a></small>
+  </div>
+  <!-- 
+    Works as a rack middleware with all kinds of cool options, but looks to need some more 
+    work. I'd like to use it once I can spare enough time to contribute back to the project
+  -->
+</section>
+
+<section class="center-slide">
+  <h2>Granularity</h2>
+</section>
+
+<section>
+  <h2 style="margin-bottom: 0;">ruby-prof</h2> 
+  <img src="images/rubyprof-callstack.png" alt="Example of information ruby-prof provides in the call tree printer."/>
+  <div align="right">
+    <small><a href="https://github.com/rdp/ruby-prof">ruby-prof @ github</a></small>
+    <small><a href="resources/ruby-prof/ruby-prof-call-tree.html" target="example">example</a></small>
+  </div>
+  <!-- 
+    See the example for how to see where the call tree gets interesting
+    There are a couple of ways to use it in your rails app
+  -->
+</section>
+
+<section>
+  <h2 style="margin-bottom: 0;">ruby-prof</h2>
+  <h3>entire action</h3>
+  <div class="code small">
+    <code>
+    gem 'ruby-prof', groups: [:development, :profile] # in Gemfile
+    </code>
+  </div>
+  <div class="code small">
+    <code>
+      if Rails.env.profile? # in config.ru<br/>
+      &nbsp;&nbsp;use Rack::RubyProf, :path => '/temp/profile'<br/>
+      end
+    </code>
+  </div>
+  <div class="code small">
+    <code>
+    # profile db connection settings in config/database.yml<br/>
+    # (same as dev environment is fine)<br/>
+    </code>
+  </div>
+  <div class="code small">
+    <code>
+    # bundle install and restart with: rails s -e profile<br/>
+    </code>
+  </div>
+  <!-- 
+    The docs mention you should create a profiling environment when you do this. I agree. The 
+    standard ruby profiler is slow because it's pure ruby, and ruby prof is faster because it's 
+    a C extension. But it's still slow, so you don't want to always have it running in development
+    mode.
+  -->
+</section>
+
+
+<section>
+  <h2 style="margin-bottom: 0;">ruby-prof</h2>
+  <h3>specific lines of code</h3>
+  <div class="code">
+    <code>
+      require 'ruby-prof'<br/>
+      <br/>
+      result = RubyProf.profile do<br/>
+      &nbsp;&nbsp;...<br/>
+      &nbsp;&nbsp;[code to profile]<br/>
+      &nbsp;&nbsp;...<br/>
+      end<br/>
+      <br/>
+      printer=RubyProf::GraphPrinter.new(result)<br/>
+      printer.print(STDOUT, {})<br/>
+    </code>
+  </div>
+  
+  <!-- 
+  
+  -->
+</section>
+
+
+
+<section>
+  <h2>benchmark</h2>
+  
+  <div class="code">
+    <code>
+      require 'benchmark'<br/>
+      puts Benchmark.measure { "a"*1_000_000 }
+    </code>
+  </div>
+  
+  <div align="right">
+    <small><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/benchmark/rdoc/Benchmark.html">benchmark docs</a></small>
+  </div>
+</section>
+
+<section>
+  http://en.wikibooks.org/wiki/Ruby_Programming/Standard_Library/Profiler
+  profiling with ruby-prof https://github.com/rdp/ruby-prof 
+  https://github.com/tmm1/perftools.rb -- where does it fit?
+  <small>jruby has https://github.com/jruby/jruby/wiki/Profiling-jruby</small>
+</section>
+
+<section>
+  (rails perf tests: benchmarking, profiling)  
+  <div align="right">
+    <small><a href="http://guides.rubyonrails.org/performance_testing.html">rails performance testing docs</a></small>
+  </div>
+</section>
+
 
 <section>
   <img src="images/slow.png" height="500" alt="The customer tells you 'The website is slow'"/>

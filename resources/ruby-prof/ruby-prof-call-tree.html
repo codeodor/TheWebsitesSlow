@@ -1,0 +1,1044 @@
+
+<!-- saved from url=(0127)file://localhost/var/folders/l5/56jlw3gd351bkg8d84kfv6240000gn/T/districts-26-students-180950,26-four_year_plan-call_stack.html -->
+<html style="
+    width: 1000%;
+"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>ruby-prof call tree</title>
+<style type="text/css">
+<!--
+body {
+    font-size:70%;
+    padding:0px;
+    margin:5px;
+    margin-right:0px;
+    margin-left:0px;
+    background: #ffffff;
+}
+ul {
+    margin-left:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding-left:0px;
+    list-style-type:none;
+}
+li {
+    margin-left:11px;
+    padding:0px;
+    white-space:nowrap;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+.thread {
+    margin-left:11px;
+    background:#708090;
+    padding-top:3px;
+    padding-left:12px;
+    padding-bottom:2px;
+    border-left:1px solid #CCCCCC;
+    border-top:1px solid #CCCCCC;
+    font-weight:bold;
+}
+.hidden {
+    display:none;
+    width:0px;
+    height:0px;
+    margin:0px;
+    padding:0px;
+    border-style:none;
+}
+.color01 { background:#adbdeb }
+.color05 { background:#9daddb }
+.color0 { background:#8d9dcb }
+.color1 { background:#89bccb }
+.color2 { background:#56e3e7 }
+.color3 { background:#32cd70 }
+.color4 { background:#a3d53c }
+.color5 { background:#c4cb34 }
+.color6 { background:#dcb66d }
+.color7 { background:#cda59e }
+.color8 { background:#be9d9c }
+.color9 { background:#cf947a }
+#commands {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#708090;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#titlebar {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:10px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#help {
+    font-size:10pt;
+    padding:10px;
+    margin-left:11px;
+    margin-bottom:0px;
+    margin-top:0px;
+    background:#8090a0;
+    display:none;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+}
+#sentinel {
+    height: 400px;
+    margin-left:11px;
+    background:#8090a0;
+    border-top:1px solid #cccccc;
+    border-left:1px solid #cccccc;
+    border-bottom:none;
+ }
+input { margin-left:10px; }
+-->
+</style>
+<script type="text/javascript">
+/*
+   Copyright (C) 2005,2009  Stefan Kaes
+   skaes@railsexpress.de
+*/
+
+function rootNode() {
+  return currentThread;
+}
+
+function hideUL(node) {
+  var lis = node.childNodes
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    hideLI(lis[i]);
+  }
+}
+
+function showUL(node) {
+  var lis = node.childNodes;
+  var l = lis.length;
+  for (var i=0; i < l ; i++ ) {
+    showLI(lis[i]);
+  }
+}
+
+function findUlChild(li){
+  var ul = li.childNodes[2];
+  while (ul && ul.nodeName != "UL") {
+    ul = ul.nextSibling;
+  }
+  return ul;
+}
+
+function isLeafNode(li) {
+  var img = li.firstChild;
+  return (img.src.indexOf('empty.png') > -1);
+}
+
+function hideLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'plus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'none';
+    hideUL(ul);
+  }
+}
+
+function showLI(li) {
+  if (isLeafNode(li))
+    return;
+
+  var img = li.firstChild;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+    showUL(ul);
+  }
+}
+
+function toggleLI(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf("minus.png")>-1)
+    hideLI(li);
+  else {
+    if (img.src.indexOf("plus.png")>-1)
+      showLI(li);
+  }
+}
+
+function aboveThreshold(text, threshold) {
+  var match = text.match(/\d+[.,]\d+/);
+  return (match && parseFloat(match[0].replace(/,/, '.'))>=threshold);
+}
+
+function setThresholdLI(li, threshold) {
+  var img = li.firstChild;
+  var text = img.nextSibling;
+  var ul = findUlChild(li);
+
+  var visible = aboveThreshold(text.nodeValue, threshold) ? 1 : 0;
+
+  var count = 0;
+  if (ul) {
+    count = setThresholdUL(ul, threshold);
+  }
+  if (count>0) {
+    img.src = 'minus.png';
+  }
+  else {
+    img.src = 'empty.png';
+  }
+  if (visible) {
+    li.style.display = 'block'
+  }
+  else {
+    li.style.display = 'none'
+  }
+  return visible;
+}
+
+function setThresholdUL(node, threshold) {
+  var lis = node.childNodes;
+  var l = lis.length;
+
+  var count = 0;
+  for ( var i = 0; i < l ; i++ ) {
+    count = count + setThresholdLI(lis[i], threshold);
+  }
+
+  var visible = (count > 0) ? 1 : 0;
+  if (visible) {
+    node.style.display = 'block';
+  }
+  else {
+    node.style.display = 'none';
+  }
+  return visible;
+}
+
+function toggleChildren(img, event) {
+  event.cancelBubble=true;
+
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+
+  var minus = (img.src.indexOf('minus.png') > -1);
+
+  if (minus) {
+    img.src = 'plus.png';
+  }
+  else
+    img.src = 'minus.png';
+
+  var li = img.parentNode;
+  var ul = findUlChild(li);
+  if (ul) {
+    if (minus)
+      ul.style.display = 'none';
+    else
+      ul.style.display = 'block';
+  }
+  if (minus)
+    moveSelectionIfNecessary(li);
+}
+
+function showChildren(li) {
+  var img = li.firstChild;
+  if (img.src.indexOf('empty.png') > -1)
+    return;
+  img.src = 'minus.png';
+
+  var ul = findUlChild(li);
+  if (ul) {
+    ul.style.display = 'block';
+  }
+}
+
+function setThreshold() {
+ var tv = document.getElementById("threshold").value;
+ if (tv.match(/[0-9]+([.,][0-9]+)?/)) {
+   var f = parseFloat(tv.replace(/,/, '.'));
+   var threads = document.getElementsByName("thread");
+   var l = threads.length;
+   for ( var i = 0; i < l ; i++ ) {
+     setThresholdUL(threads[i], f);
+   }
+   var p = selectedNode;
+   while (p && p.style.display=='none')
+     p=p.parentNode.parentNode;
+   if (p && p.nodeName=="LI")
+    selectNode(p);
+ }
+ else {
+   alert("Please specify a decimal number as threshold value!");
+ }
+}
+
+function collapseAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    hideUL(threads[i]);
+  }
+  selectNode(rootNode(), null);
+}
+
+function expandAll(event) {
+  event.cancelBubble=true;
+  var threads = document.getElementsByName("thread");
+  var l = threads.length;
+  for ( var i = 0; i < l ; i++ ) {
+    showUL(threads[i]);
+  }
+}
+
+function toggleHelp(node) {
+  var help = document.getElementById("help");
+  if (node.value == "Show Help") {
+    node.value = "Hide Help";
+    help.style.display = 'block';
+  }
+  else {
+    node.value = "Show Help";
+    help.style.display = 'none';
+  }
+}
+
+var selectedNode = null;
+var selectedColor = null;
+var selectedThread = null;
+
+function descendentOf(a,b){
+  while (a!=b && b!=null)
+    b=b.parentNode;
+  return (a==b);
+}
+
+function moveSelectionIfNecessary(node){
+  if (descendentOf(node, selectedNode))
+    selectNode(node, null);
+}
+
+function selectNode(node, event) {
+  if (event) {
+    event.cancelBubble = true;
+    thread = findThread(node);
+    selectThread(thread);
+  }
+  if (selectedNode) {
+    selectedNode.style.background = selectedColor;
+  }
+  selectedNode = node;
+  selectedColor = node.style.background;
+  selectedNode.style.background = "red";
+  selectedNode.scrollIntoView();
+  window.scrollBy(0,-400);
+}
+
+function moveUp(){
+  var p = selectedNode.previousSibling;
+  while (p && p.style.display == 'none')
+    p = p.previousSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveDown(){
+  var p = selectedNode.nextSibling;
+  while (p && p.style.display == 'none')
+    p = p.nextSibling;
+  if (p && p.nodeName == "LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveLeft(){
+  var p = selectedNode.parentNode.parentNode;
+  if (p && p.nodeName=="LI") {
+    selectNode(p, null);
+  }
+}
+
+function moveRight(){
+  if (!isLeafNode(selectedNode)) {
+    showChildren(selectedNode);
+    var ul = findUlChild(selectedNode);
+    if (ul) {
+      selectNode(ul.firstChild, null);
+    }
+  }
+}
+
+function moveForward(){
+  if (isLeafNode(selectedNode)) {
+    var p = selectedNode;
+    while ((p.nextSibling == null || p.nextSibling.style.display=='none') && p.nodeName=="LI") {
+      p = p.parentNode.parentNode;
+    }
+    if (p.nodeName=="LI")
+      selectNode(p.nextSibling, null);
+  }
+  else {
+    moveRight();
+  }
+}
+
+function isExpandedNode(li){
+  var img = li.firstChild;
+  return(img.src.indexOf('minus.png')>-1);
+}
+
+function moveBackward(){
+  var p = selectedNode;
+  var q = p.previousSibling;
+  while (q != null && q.style.display=='none')
+    q = q.previousSibling;
+  if (q == null) {
+    p = p.parentNode.parentNode;
+  } else {
+    while (!isLeafNode(q) && isExpandedNode(q)) {
+      q = findUlChild(q).lastChild;
+      while (q.style.display=='none')
+        q = q.previousSibling;
+    }
+    p = q;
+  }
+  if (p.nodeName=="LI")
+    selectNode(p, null);
+}
+
+function moveHome() {
+  selectNode(currentThread);
+}
+
+var currentThreadIndex = null;
+
+function findThread(node){
+  while (node && node.parentNode.nodeName!="BODY") {
+    node = node.parentNode;
+  }
+  return node.firstChild;
+}
+
+function selectThread(node){
+  var threads = document.getElementsByName("thread");
+  currentThread = node;
+  for (var i=0; i<threads.length; i++) {
+    if (threads[i]==currentThread.parentNode)
+      currentThreadIndex = i;
+  }
+}
+
+function nextThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==threads.length-1)
+    currentThreadIndex = 0;
+  else
+    currentThreadIndex += 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function previousThread(){
+  var threads = document.getElementsByName("thread");
+  if (currentThreadIndex==0)
+    currentThreadIndex = threads.length-1;
+  else
+    currentThreadIndex -= 1
+  currentThread = threads[currentThreadIndex].firstChild;
+  selectNode(currentThread, null);
+}
+
+function switchThread(node, event){
+  event.cancelBubble = true;
+  selectThread(node.nextSibling.firstChild);
+  selectNode(currentThread, null);
+}
+
+function handleKeyEvent(event){
+  var code = event.charCode ? event.charCode : event.keyCode;
+  var str = String.fromCharCode(code);
+  switch (str) {
+    case "a": moveLeft();  break;
+    case "s": moveDown();  break;
+    case "d": moveRight(); break;
+    case "w": moveUp();    break;
+    case "f": moveForward(); break;
+    case "b": moveBackward(); break;
+    case "x": toggleChildren(selectedNode.firstChild, event); break;
+    case "*": toggleLI(selectedNode); break;
+    case "n": nextThread(); break;
+    case "h": moveHome(); break;
+    case "p": previousThread(); break;
+  }
+}
+document.onkeypress=function(event){ handleKeyEvent(event) };
+
+window.onload=function(){
+  var images = document.getElementsByTagName("img");
+  for (var i=0; i<images.length; i++) {
+    var img = images[i];
+    if (img.className == "toggle") {
+      img.onclick = function(event){ toggleChildren(this, event); };
+    }
+  }
+  var divs = document.getElementsByTagName("div");
+  for (i=0; i<divs.length; i++) {
+    var div = divs[i];
+    if (div.className == "thread")
+      div.onclick = function(event){ switchThread(this, event) };
+  }
+  var lis = document.getElementsByTagName("li");
+  for (var i=0; i<lis.length; i++) {
+    lis[i].onclick = function(event){ selectNode(this, event); };
+  }
+  var threads = document.getElementsByName("thread");
+  currentThreadIndex = 0;
+  currentThread = threads[0].firstChild;
+  selectNode(currentThread, null);
+}
+</script>
+</head><body>
+<div id="titlebar">
+Call tree for application <b>script/rails -e profile</b><br>
+Generated on 2013-01-28 12:46:54 -0600 with options {:min_percent=&gt;1}<br>
+</div>
+<div id="commands">
+<span style="font-size: 11pt; font-weight: bold;">Threshold:</span>
+<input value="1.0" size="3" id="threshold" type="text">
+<input value="Apply" onclick="setThreshold();" type="submit">
+<input value="Expand All" onclick="expandAll(event);" type="submit">
+<input value="Collapse All" onclick="collapseAll(event);" type="submit">
+<input value="Show Help" onclick="toggleHelp(this);" type="submit">
+</div>
+<div style="display: none;" id="help">
+<img src="empty.png"> Enter a decimal value <i>d</i> into the threshold field and click "Apply"
+to hide all nodes marked with time values lower than <i>d</i>.<br>
+<img src="empty.png"> Click on "Expand All" for full tree expansion.<br>
+<img src="empty.png"> Click on "Collapse All" to show only top level nodes.<br>
+<img src="empty.png"> Use a, s, d, w as in Quake or Urban Terror to navigate the tree.<br>
+<img src="empty.png"> Use f and b to navigate the tree in preorder forward and backwards.<br>
+<img src="empty.png"> Use x to toggle visibility of a subtree.<br>
+<img src="empty.png"> Use * to expand/collapse a whole subtree.<br>
+<img src="empty.png"> Use h to navigate to thread root.<br>
+<img src="empty.png"> Use n and p to navigate between threads.<br>
+<img src="empty.png"> Click on background to move focus to a subtree.<br>
+</div>
+<div class="thread">Thread: 2157413520 (57.27% ~ 1.92342209815979)</div><ul name="thread"><li class="color9" style="display: block; background-color: red; background-position: initial initial; background-repeat: initial initial;"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/ruby-prof-0.12.1/lib/ruby-prof/rack.rb&line=27">Rack::RubyProf#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/railties-3.2.11/lib/rails/railtie/configurable.rb&line=29">Rails::Railtie::Configurable::ClassMethods#method_missing</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/railties-3.2.11/lib/rails/application.rb&line=221">Rails::Application#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/railties-3.2.11/lib/rails/engine.rb&line=478">Rails::Engine#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/static.rb&line=52">ActionDispatch::Static#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.34% (98.34%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/lock.rb&line=12">Rack::Lock#call</a> [1 calls, 1 total]
+<ul style="display: block;"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.33% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/cache/strategy/local_cache.rb&line=70">ActiveSupport::Cache::Strategy::LocalCache::Middleware#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.33% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/runtime.rb&line=15">Rack::Runtime#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.33% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/methodoverride.rb&line=12">Rack::MethodOverride#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.33% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/request_id.rb&line=20">ActionDispatch::RequestId#call</a> [1 calls, 1 total]
+<ul style="display: block;"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.32% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/railties-3.2.11/lib/rails/rack/logger.rb&line=12">Rails::Rack::Logger#call</a> [1 calls, 1 total]
+<ul style="display: block;"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.32% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/tagged_logging.rb&line=20">ActiveSupport::TaggedLogging#tagged</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 98.32% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/railties-3.2.11/lib/rails/rack/logger.rb&line=24">Rails::Rack::Logger#call_app</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.25% (98.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/show_exceptions.rb&line=54">ActionDispatch::ShowExceptions#call</a> [1 calls, 1 total]
+<ul style="display: block;"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.25% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/debug_exceptions.rb&line=14">ActionDispatch::DebugExceptions#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.25% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/remote_ip.rb&line=29">ActionDispatch::RemoteIp#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/callbacks.rb&line=26">ActionDispatch::Callbacks#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=80">ActiveSupport::Callbacks#run_callbacks</a> [1 calls, 2083 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=384">ActionDispatch::Callbacks#_run_call_callbacks</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=396">ActiveSupport::Callbacks::ClassMethods#__run_callback</a> [1 calls, 2083 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=401">ActionDispatch::Callbacks#_run__144438471253212062__call__3114872604153026630__callbacks</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/connection_pool.rb&line=476">ActiveRecord::ConnectionAdapters::ConnectionManagement#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.24% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/query_cache.rb&line=60">ActiveRecord::QueryCache#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.19% (99.96%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/cookies.rb&line=339">ActionDispatch::Cookies#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.19% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/session/abstract/id.rb&line=204">Rack::Session::Abstract::ID#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.19% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/session/abstract/id.rb&line=208">Rack::Session::Abstract::ID#context</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.17% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/flash.rb&line=237">ActionDispatch::Flash#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.06% (99.89%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/params_parser.rb&line=16">ActionDispatch::ParamsParser#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.06% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/head.rb&line=7">ActionDispatch::Head#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.06% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/conditionalget.rb&line=22">Rack::ConditionalGet#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.06% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/rack-1.4.3/lib/rack/etag.rb&line=22">Rack::ETag#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.04% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/best_standards_support.rb&line=16">ActionDispatch::BestStandardsSupport#call</a> [1 calls, 1 total]
+<ul style="display: block;"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.04% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/warden-1.2.1/lib/warden/manager.rb&line=30">Warden::Manager#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.03% (99.99%) Kernel#catch [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.03% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/rack/browser_monitoring.rb&line=11">NewRelic::Rack::BrowserMonitoring#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.03% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/rack/error_collector.rb&line=7">NewRelic::Rack::ErrorCollector#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.03% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=599">ActionDispatch::Routing::RouteSet#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.03% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/router.rb&line=53">Journey::Router#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 97.00% (99.96%) Array#each [1 calls, 15113 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.99% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=27">ActionDispatch::Routing::RouteSet::Dispatcher#call</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.98% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=72">ActionDispatch::Routing::RouteSet::Dispatcher#dispatch</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.98% (100.00%) Proc#call [1 calls, 614 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.97% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/rack_delegation.rb&line=11">ActionController::RackDelegation#dispatch</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.97% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal.rb&line=199">ActionController::Metal#dispatch</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.97% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/rendering.rb&line=43">AbstractController::Rendering#process</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.95% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/base.rb&line=112">AbstractController::Base#process</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.95% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/rails3/action_controller.rb&line=25">NewRelic::Agent::Instrumentation::Rails3::ActionController#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.92% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/controller_instrumentation.rb&line=245">NewRelic::Agent::Instrumentation::ControllerInstrumentation#perform_action_with_newrelic_trace</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.80% (99.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.77% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/railties/controller_runtime.rb&line=13">ActiveRecord::Railties::ControllerRuntime#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.76% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/params_wrapper.rb&line=194">ActionController::ParamsWrapper#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.76% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/instrumentation.rb&line=17">ActionController::Instrumentation#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.75% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [2 calls, 144 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.75% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [2 calls, 340 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/rescue.rb&line=28">ActionController::Rescue#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/callbacks.rb&line=16">AbstractController::Callbacks#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=80">ActiveSupport::Callbacks#run_callbacks</a> [1 calls, 2083 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=384">ActionController::Base#_run_process_action_callbacks</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=396">ActiveSupport::Callbacks::ClassMethods#__run_callback</a> [1 calls, 2083 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.72% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/callbacks.rb&line=401">FourYearPlansController#_run__2650049124566259020__process_action__4235760211262955446__callbacks</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.21% (99.48%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/rendering.rb&line=8">ActionController::Rendering#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.21% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/base.rb&line=166">AbstractController::Base#process_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 96.21% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/implicit_render.rb&line=3">ActionController::ImplicitRender#send_action</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.84% (99.62%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/implicit_render.rb&line=9">ActionController::ImplicitRender#default_render</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.84% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/instrumentation.rb&line=37">ActionController::Instrumentation#render</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.84% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/railties/controller_runtime.rb&line=21">ActiveRecord::Railties::ControllerRuntime#cleanup_view_runtime</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.84% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/instrumentation.rb&line=82">ActionController::Instrumentation#cleanup_view_runtime</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.84% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/core_ext/benchmark.rb&line=4">&lt;Module::Benchmark&gt;#ms</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.83% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/benchmark.rb&line=293">Benchmark#realtime</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.83% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/rendering.rb&line=14">ActionController::Rendering#render</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.83% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/rendering.rb&line=86">AbstractController::Rendering#render</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.82% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/compatibility.rb&line=48">ActionController::Compatibility#render_to_body</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.82% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/renderers.rb&line=27">ActionController::Renderers#render_to_body</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.82% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/rendering.rb&line=101">AbstractController::Rendering#render_to_body</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.82% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_controller/metal/streaming.rb&line=221">ActionController::Streaming#_render_template</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.82% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/abstract_controller/rendering.rb&line=108">AbstractController::Rendering#_render_template</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.81% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/renderer.rb&line=13">ActionView::Renderer#render</a> [1 calls, 2 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.81% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/renderer.rb&line=35">ActionView::Renderer#render_template</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.81% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/rails3/action_controller.rb&line=150">ActionView::TemplateRenderer#render_with_newrelic</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.79% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.78% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/template_renderer.rb&line=6">ActionView::TemplateRenderer#render</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.78% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/template_renderer.rb&line=42">ActionView::TemplateRenderer#render_template</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 95.78% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/template_renderer.rb&line=52">ActionView::TemplateRenderer#render_with_layout</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.90% (96.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/abstract_renderer.rb&line=37">ActionView::AbstractRenderer#instrument</a> [1 calls, 11 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.90% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [1 calls, 144 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.90% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [1 calls, 340 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.89% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/template.rb&line=142">ActionView::Template#render</a> [1 calls, 12 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.89% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [1 calls, 144 total]
+<ul><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 92.88% (100.00%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/views/four_year_plans/show.html.erb&line=0">ActionView::CompiledTemplates#_app_views_four_year_plans_show_html_erb__1726155061386029782_2153069980</a> [1 calls, 6 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.60% (96.46%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/helpers/rendering_helper.rb&line=18">ActionView::Helpers::RenderingHelper#render</a> [1 calls, 10 total]
+<ul style="display: block;"><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.60% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/renderer.rb&line=40">ActionView::Renderer#render_partial</a> [1 calls, 10 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.60% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/rails3/action_controller.rb&line=167">ActionView::PartialRenderer#render_with_newrelic</a> [1 calls, 10 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.58% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.57% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/partial_renderer.rb&line=220">ActionView::PartialRenderer#render</a> [1 calls, 10 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.57% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/abstract_renderer.rb&line=37">ActionView::AbstractRenderer#instrument</a> [1 calls, 11 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.57% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [1 calls, 144 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.57% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [1 calls, 340 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.56% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/partial_renderer.rb&line=254">ActionView::PartialRenderer#render_partial</a> [1 calls, 10 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.54% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/template.rb&line=142">ActionView::Template#render</a> [1 calls, 12 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.54% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [1 calls, 144 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 89.54% (100.00%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/views/four_year_plans/_courses_table.html.erb&line=0">ActionView::CompiledTemplates#_app_views_four_year_plans__courses_table_html_erb___1670156232378510930_2154471640</a> [1 calls, 373 total]
+<ul><li class="color8" style="display:block"><img class="toggle" src="minus.png"> 80.77% (90.20%) Array#each [2 calls, 15113 total]
+<ul style="display: block;"><li class="color3" style="display:block"><img class="toggle" src="minus.png"> 35.16% (43.53%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#most_courses_in_subject</a> [22 calls, 72 total]
+<ul style="display: block;"><li class="color3" style="display:block"><img class="toggle" src="minus.png"> 35.10% (99.84%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#most_courses_in_subject</a> [11 calls, 72 total]
+<ul style="display: block;"><li class="color3" style="display:block"><img class="toggle" src="minus.png"> 35.10% (99.99%) Array#each [11 calls, 15113 total]
+<ul><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 22.88% (65.21%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#courses_to_show_in_four_year_plan</a> [44 calls, 288 total]
+<ul style="display: block;"><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 22.75% (99.41%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#courses_to_show_in_four_year_plan</a> [44 calls, 288 total]
+<ul style="display: block;"><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 20.79% (91.38%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=77">ActiveRecord::Associations::CollectionProxy#method_missing</a> [44 calls, 214 total]
+<ul><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 20.73% (99.70%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=43">ActiveRecord::Associations::CollectionProxy#load_target</a> [44 calls, 215 total]
+<ul><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 20.72% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_association.rb&line=333">ActiveRecord::Associations::CollectionAssociation#load_target</a> [44 calls, 215 total]
+<ul><li class="color2" style="display:block"><img class="toggle" src="minus.png"> 20.68% (99.80%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_association.rb&line=377">ActiveRecord::Associations::CollectionAssociation#find_target</a> [44 calls, 47 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.53% (79.93%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=158">ActiveRecord::FinderMethods#all</a> [44 calls, 47 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.52% (99.95%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [44 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.52% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [44 calls, 947 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.34% (98.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [44 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.63% (95.66%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [44 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.62% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [44 calls, 947 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.51% (99.26%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [44 calls, 463 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.22% (59.44%) Array#each [44 calls, 15113 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.14% (99.20%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/preloader.rb&line=96">ActiveRecord::Associations::Preloader#run</a> [88 calls, 88 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.14% (99.90%) Array#each [38 calls, 15113 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.13% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/preloader.rb&line=104">ActiveRecord::Associations::Preloader#preload</a> [38 calls, 38 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.12% (99.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/preloader.rb&line=129">ActiveRecord::Associations::Preloader#preload_one</a> [38 calls, 38 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.06% (99.36%) Hash#each [38 calls, 2272 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.06% (99.96%) Hash#each [38 calls, 2272 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.04% (99.74%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/preloader/association.rb&line=17">ActiveRecord::Associations::Preloader::Association#run</a> [38 calls, 38 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.97% (99.28%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/preloader/singular_association.rb&line=8">ActiveRecord::Associations::Preloader::SingularAssociation#preload</a> [38 calls, 38 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.89% (99.13%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/associations/preloader/association.rb&line=12">ActiveRecord::Associations::Preloader::Association#associated_records_by_owner</a> [38 calls, 38 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.21% (92.36%) Array#flatten [38 calls, 994 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.20% (99.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=5">ActiveRecord::Delegation#to_ary</a> [38 calls, 39 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.19% (99.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [38 calls, 463 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.19% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [38 calls, 947 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.09% (98.76%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [38 calls, 463 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.00% (86.46%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [19 calls, 463 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 6.99% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [19 calls, 947 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 6.95% (99.33%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [19 calls, 463 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 6.57% (94.57%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=209">ActiveRecord::FinderMethods#find_with_associations</a> [19 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.33% (65.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [19 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.48% (57.32%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [19 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.45% (98.78%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.45% (99.74%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.42% (98.71%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.23% (92.39%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.22% (99.54%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.22% (99.71%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.16% (97.42%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [19 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.83% (84.61%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [19 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.82% (99.70%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [19 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.22% (67.02%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/fanout.rb&line=24">ActiveSupport::Notifications::Fanout#publish</a> [19 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.22% (99.65%) Array#each [19 calls, 15113 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.21% (99.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/fanout.rb&line=46">ActiveSupport::Notifications::Fanout::Subscriber#publish</a> [38 calls, 667 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.19% (98.03%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/log_subscriber.rb&line=88">ActiveSupport::LogSubscriber#call</a> [19 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.14% (95.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/log_subscriber.rb&line=21">ActiveRecord::LogSubscriber#sql</a> [19 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.08% (94.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/log_subscriber.rb&line=103">ActiveSupport::LogSubscriber#debug</a> [19 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.07% (99.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/tagged_logging.rb&line=53">ActiveSupport::TaggedLogging#debug</a> [19 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.07% (99.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/tagged_logging.rb&line=46">ActiveSupport::TaggedLogging#add</a> [19 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (98.75%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/buffered_logger.rb&line=79">ActiveSupport::BufferedLogger#add</a> [19 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/logger.rb&line=363">Logger#add</a> [19 calls, 343 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (98.30%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/logger.rb&line=557">Logger::LogDevice#write</a> [19 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.03% (99.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/monitor.rb&line=208">MonitorMixin#mon_synchronize</a> [19 calls, 1343 total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.02% (98.55%) IO#write [19 calls, 342 total]
+</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (23.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=5">ActiveRecord::ConnectionAdapters::DatabaseStatements#to_sql</a> [19 calls, 654 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.03% (99.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/bind_visitor.rb&line=9">Arel::Visitors::BindVisitor#accept</a> [19 calls, 442 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.03% (99.72%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=17">Arel::Visitors::ToSql#accept</a> [19 calls, 442 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.02% (99.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=4">Arel::Visitors::Visitor#accept</a> [19 calls, 447 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.02% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=18">Arel::Visitors::Visitor#visit</a> [19 calls, 16153 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.02% (99.47%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/mysql.rb&line=34">Arel::Visitors::MySQL#visit_Arel_Nodes_SelectStatement</a> [19 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.02% (99.84%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=118">Arel::Visitors::ToSql#visit_Arel_Nodes_SelectStatement</a> [19 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.01% (99.18%) Array#map [38 calls, 8114 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.00% (99.44%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/mysql.rb&line=39">Arel::Visitors::MySQL#visit_Arel_Nodes_SelectCore</a> [19 calls, 443 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.09% (16.66%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/associations/join_dependency.rb&line=4">ActiveRecord::Associations::JoinDependency#instantiate</a> [19 calls, 75 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.94% (31.84%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [44 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.91% (99.44%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [44 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.58% (93.31%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [44 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.58% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [44 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.32% (94.39%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [44 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.06% (94.07%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [44 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.02% (98.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.01% (99.66%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.98% (99.34%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.91% (98.09%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.88% (99.43%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.87% (99.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.77% (97.34%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [44 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.99% (79.40%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.98% (99.57%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [44 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 2.45% (82.29%) Mysql2::Client#query [44 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.30% (8.37%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=474">ActiveRecord::Relation#eager_loading?</a> [88 calls, 639 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.26% (97.33%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=513">ActiveRecord::Relation#references_eager_loaded_tables?</a> [88 calls, 163 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.12% (19.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=86">ActiveRecord::Associations::Association#scoped</a> [44 calls, 197 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.88% (69.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=122">ActiveRecord::Associations::Association#target_scope</a> [44 calls, 197 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.86% (99.55%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/scoping/named.rb&line=30">ActiveRecord::Scoping::Named::ClassMethods#scoped</a> [44 calls, 338 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.83% (98.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/base.rb&line=452">&lt;Class::ActiveRecord::Base&gt;#relation</a> [44 calls, 592 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.81% (99.26%) Class#new [44 calls, 23005 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.80% (99.80%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/relation.rb&line=65">ActiveRecord::Relation#initialize</a> [44 calls, 1334 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 2.78% (99.10%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/relation.rb&line=65">ActiveRecord::Relation#initialize</a> [44 calls, 1334 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.02% (24.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=96">ActiveRecord::Associations::Association#association_scope</a> [44 calls, 197 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.65% (7.23%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#four_year_plan_courses_by_grade_and_subject</a> [44 calls, 88 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.59% (96.59%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#four_year_plan_courses_by_grade_and_subject</a> [44 calls, 88 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (97.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=5">ActiveRecord::Delegation#each</a> [1 calls, 1 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.55% (99.50%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [1 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.55% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [1 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.54% (99.68%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [1 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.53% (99.37%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [1 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.53% (99.95%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.52% (99.38%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [1 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.52% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [1 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.48% (97.31%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [1 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.47% (99.07%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [1 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.47% (99.76%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.47% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.46% (99.69%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.44% (98.62%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.44% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.44% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.44% (99.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.41% (98.23%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.41% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [1 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.39% (98.40%) Mysql2::Client#query [1 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 12.19% (34.72%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">AcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#requirement_for_grade_level_and_subject_area</a> [44 calls, 288 total]
+<ul style="display: block;"><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 12.08% (99.14%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">AcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#requirement_for_grade_level_and_subject_area</a> [44 calls, 288 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 12.02% (99.52%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=77">ActiveRecord::Associations::CollectionProxy#method_missing</a> [44 calls, 214 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 11.95% (99.37%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=77">ActiveRecord::Associations::CollectionProxy#method_missing</a> [44 calls, 214 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 11.18% (93.60%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=274">ActiveRecord::FinderMethods#find_or_instantiator_by_attributes</a> [44 calls, 44 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="minus.png"> 10.64% (95.17%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=114">ActiveRecord::FinderMethods#first</a> [44 calls, 162 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="minus.png"> 10.63% (99.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=374">ActiveRecord::FinderMethods#find_first</a> [44 calls, 162 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="minus.png"> 10.59% (99.58%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [44 calls, 463 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="minus.png"> 10.58% (99.96%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [44 calls, 947 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="minus.png"> 10.40% (98.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [44 calls, 463 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.89% (95.06%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [44 calls, 242 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.86% (99.75%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [44 calls, 462 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.54% (96.76%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [44 calls, 242 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.54% (99.95%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [44 calls, 947 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 9.08% (95.23%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [44 calls, 327 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.53% (93.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [44 calls, 327 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.48% (99.40%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.47% (99.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.42% (99.48%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.27% (98.17%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.25% (99.75%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.23% (99.81%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 8.13% (98.76%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [44 calls, 462 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.36% (90.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [44 calls, 208 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.35% (99.83%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [44 calls, 340 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="empty.png"> 6.80% (92.51%) Mysql2::Client#query [44 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 19.68% (24.37%) Range#each [11 calls, 11 total]
+<ul style="display: block;"><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 19.60% (99.61%) Array#each [39 calls, 15113 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.56% (38.57%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=77">ActiveRecord::Associations::CollectionProxy#method_missing</a> [66 calls, 214 total]
+<ul style="display:none"><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.48% (98.92%) Array#each [66 calls, 15113 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.98% (79.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=38">ActiveRecord::Delegation#+</a> [51 calls, 51 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.94% (99.32%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [51 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.94% (99.93%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [51 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.75% (96.75%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [51 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.24% (56.40%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [51 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.21% (99.02%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [51 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.85% (88.76%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [51 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.84% (99.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [51 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.46% (51.35%) Array#collect! [51 calls, 252 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.43% (98.27%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/inheritance.rb&line=61">ActiveRecord::Inheritance::ClassMethods#instantiate</a> [459 calls, 1040 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.13% (78.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/base.rb&line=513">ActiveRecord::Base#init_with</a> [459 calls, 1040 total]
+<ul style="display:none"></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.20% (42.28%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [51 calls, 327 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.39% (41.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=259">ActiveRecord::QueryMethods#arel</a> [51 calls, 686 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.37% (99.06%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=263">ActiveRecord::QueryMethods#build_arel</a> [51 calls, 403 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.19% (92.69%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=310">ActiveRecord::QueryMethods#collapse_wheres</a> [51 calls, 403 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 2.16% (98.33%) Array#- [51 calls, 3127 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 5.08% (25.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=212">#&lt;Module:0x00000103511810&gt;#new_district_student_four_year_plan_course_path</a> [156 calls, 156 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.92% (96.89%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/helpers/url_helper.rb&line=100">ActionView::Helpers::UrlHelper#url_for</a> [156 calls, 249 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.67% (94.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/url_for.rb&line=143">ActionDispatch::Routing::UrlFor#url_for</a> [156 calls, 414 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.23% (90.60%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=572">ActionDispatch::Routing::RouteSet#url_for</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.38% (79.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=561">ActionDispatch::Routing::RouteSet#generate</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.12% (92.43%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=520">ActionDispatch::Routing::RouteSet::Generator#generate</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.10% (99.35%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/formatter.rb&line=13">Journey::Formatter#generate</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.06% (98.62%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/formatter.rb&line=58">Journey::Formatter#match_route</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.16% (38.04%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/route.rb&line=69">Journey::Route#format</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (89.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/visitors.rb&line=9">Journey::Visitors::Visitor#accept</a> [156 calls, 207 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (99.46%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/visitors.rb&line=14">Journey::Visitors::Visitor#visit</a> [156 calls, 5595 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.02% (97.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/visitors.rb&line=22">Journey::Visitors::Visitor#visit_CAT</a> [156 calls, 2694 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.01% (99.39%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/journey-1.0.4/lib/journey/visitors.rb&line=104">Journey::Visitors::Formatter#binary</a> [156 calls, 2694 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.29% (16.80%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/four_year_plan_course.rb&line=27">FourYearPlanCourse(id: integer, course_id: integer, district_id: integer, student_id: string, course_type: string, input_by: string, created_at: datetime, updated_at: datetime, subject_area_id: integer, grade_level: string, selected_semester: string, selected_sequence: string, selected_arrangement: string, selected_year: date)#sanitized_name</a> [9 calls, 9 total]
+<ul style="display: none;"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.29% (99.98%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/four_year_plan_course.rb&line=22">FourYearPlanCourse(id: integer, course_id: integer, district_id: integer, student_id: string, course_type: string, input_by: string, created_at: datetime, updated_at: datetime, subject_area_id: integer, grade_level: string, selected_semester: string, selected_sequence: string, selected_arrangement: string, selected_year: date)#name</a> [9 calls, 18 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.29% (99.90%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/four_year_plan_course.rb&line=22">FourYearPlanCourse(id: integer, course_id: integer, district_id: integer, student_id: string, course_type: string, input_by: string, created_at: datetime, updated_at: datetime, subject_area_id: integer, grade_level: string, selected_semester: string, selected_sequence: string, selected_arrangement: string, selected_year: date)#name</a> [9 calls, 18 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.27% (99.46%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=5">ActiveRecord::Associations::SingularAssociation#reader</a> [9 calls, 743 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.27% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=52">ActiveRecord::Associations::Association#reload</a> [9 calls, 71 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.27% (99.87%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=136">ActiveRecord::Associations::Association#load_target</a> [9 calls, 71 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.24% (99.11%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=41">ActiveRecord::Associations::SingularAssociation#find_target</a> [9 calls, 70 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.95% (91.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=114">ActiveRecord::FinderMethods#first</a> [9 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.95% (99.93%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=374">ActiveRecord::FinderMethods#find_first</a> [9 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.94% (99.64%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [9 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.94% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [9 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.90% (98.73%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [9 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.75% (94.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [9 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.75% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [9 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.73% (99.20%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [9 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.52% (92.15%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=209">ActiveRecord::FinderMethods#find_with_associations</a> [9 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.55% (61.42%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [9 calls, 327 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.90% (20.93%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#credits_earned_in_grade</a> [4 calls, 8 total]
+<ul style="display: block;"><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.89% (99.96%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#credits_earned_in_grade</a> [4 calls, 8 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.88% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#courses_by_grade_and_subject</a> [4 calls, 154 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.88% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#courses_by_grade_and_subject</a> [4 calls, 154 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.21% (96.01%) Array#each [1 calls, 15113 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.09% (99.30%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/student_course.rb&line=14">StudentCourse(student_id: string, district_id: integer, district_course_id: integer, year_taken: date, semester: string, grade_level: string, course_name: string, final_grade: float, credits_earned: float, teacher_last_name: string, teacher_first_name: string, record_type: string, created_at: datetime, updated_at: datetime, import_service_id: string, import_local_id: string, teacher_email: string)#primary_subject</a> [94 calls, 282 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.09% (99.97%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/student_course.rb&line=14">StudentCourse(student_id: string, district_id: integer, district_course_id: integer, year_taken: date, semester: string, grade_level: string, course_name: string, final_grade: float, credits_earned: float, teacher_last_name: string, teacher_first_name: string, record_type: string, created_at: datetime, updated_at: datetime, import_service_id: string, import_local_id: string, teacher_email: string)#primary_subject</a> [188 calls, 282 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 16.00% (99.42%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=5">ActiveRecord::Associations::SingularAssociation#reader</a> [188 calls, 743 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.88% (99.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=52">ActiveRecord::Associations::Association#reload</a> [47 calls, 71 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.86% (99.87%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=136">ActiveRecord::Associations::Association#load_target</a> [47 calls, 71 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 15.74% (99.27%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=41">ActiveRecord::Associations::SingularAssociation#find_target</a> [47 calls, 70 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 14.27% (90.65%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=114">ActiveRecord::FinderMethods#first</a> [47 calls, 162 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 14.26% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=374">ActiveRecord::FinderMethods#find_first</a> [47 calls, 162 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 14.21% (99.65%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [47 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 14.21% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [47 calls, 947 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 14.02% (98.68%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [47 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 13.24% (94.45%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [47 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 13.24% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [47 calls, 947 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 13.13% (99.14%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [47 calls, 463 total]
+<ul><li class="color1" style="display:block"><img class="toggle" src="minus.png"> 12.03% (91.68%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=209">ActiveRecord::FinderMethods#find_with_associations</a> [47 calls, 75 total]
+<ul><li class="color05" style="display:block"><img class="toggle" src="plus.png"> 7.02% (58.34%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [47 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.61% (37.21%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=5">ActiveRecord::ConnectionAdapters::DatabaseStatements#to_sql</a> [47 calls, 654 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.59% (99.27%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/bind_visitor.rb&line=9">Arel::Visitors::BindVisitor#accept</a> [47 calls, 442 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.59% (99.75%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=17">Arel::Visitors::ToSql#accept</a> [47 calls, 442 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.58% (99.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=4">Arel::Visitors::Visitor#accept</a> [47 calls, 447 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.58% (99.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=18">Arel::Visitors::Visitor#visit</a> [47 calls, 16153 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.57% (99.45%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/mysql.rb&line=34">Arel::Visitors::MySQL#visit_Arel_Nodes_SelectStatement</a> [47 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.56% (99.87%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=118">Arel::Visitors::ToSql#visit_Arel_Nodes_SelectStatement</a> [47 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.52% (98.31%) Array#map [94 calls, 8114 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.51% (99.47%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/mysql.rb&line=39">Arel::Visitors::MySQL#visit_Arel_Nodes_SelectCore</a> [47 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.50% (99.78%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=129">Arel::Visitors::ToSql#visit_Arel_Nodes_SelectCore</a> [47 calls, 443 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.09% (83.41%) Array#map [94 calls, 8114 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.02% (97.08%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=18">Arel::Visitors::Visitor#visit</a> [2021 calls, 16153 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.73% (85.30%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=355">Arel::Visitors::ToSql#visit_Arel_Nodes_As</a> [1974 calls, 3151 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.54% (89.31%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/visitor.rb&line=18">Arel::Visitors::Visitor#visit</a> [3948 calls, 16153 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.08% (70.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/arel-3.0.2/lib/arel/visitors/to_sql.rb&line=363">Arel::Visitors::ToSql#visit_Arel_Attributes_Attribute</a> [1974 calls, 4617 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.34% (33.36%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [47 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.99% (84.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.98% (99.61%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.94% (97.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.71% (88.51%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.70% (99.08%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.69% (99.44%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.61% (95.28%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [26 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.15% (71.42%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [26 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.14% (99.26%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [26 calls, 340 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.05% (29.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=81">ActiveRecord::ConnectionAdapters::QueryCache#locked?</a> [47 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.04% (99.36%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=41">ActiveRecord::Delegation#locked</a> [47 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.03% (99.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=259">ActiveRecord::QueryMethods#arel</a> [47 calls, 686 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.02% (99.68%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=263">ActiveRecord::QueryMethods#build_arel</a> [47 calls, 403 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.35% (66.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/query_methods.rb&line=333">ActiveRecord::QueryMethods#build_joins</a> [47 calls, 77 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.36% (19.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/associations/join_dependency.rb&line=4">ActiveRecord::Associations::JoinDependency#instantiate</a> [47 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.11% (89.36%) Array#map [47 calls, 8114 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.60% (75.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/join_dependency.rb&line=155">ActiveRecord::Associations::JoinDependency#construct</a> [47 calls, 504 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (97.31%) Array#each [47 calls, 15113 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.55% (99.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/join_dependency.rb&line=155">ActiveRecord::Associations::JoinDependency#construct</a> [268 calls, 504 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.37% (88.60%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/composite_primary_keys-5.0.10/lib/composite_primary_keys/associations/join_dependency.rb&line=27">ActiveRecord::Associations::JoinDependency#construct_association</a> [141 calls, 225 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.79% (14.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=230">ActiveRecord::FinderMethods#construct_relation_for_association_find</a> [47 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.20% (67.03%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/join_dependency.rb&line=37">ActiveRecord::Associations::JoinDependency#columns</a> [47 calls, 75 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.17% (98.08%) Array#collect [47 calls, 712 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (7.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=474">ActiveRecord::Relation#eager_loading?</a> [94 calls, 639 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.02% (98.10%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=513">ActiveRecord::Relation#references_eager_loaded_tables?</a> [47 calls, 163 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.44% (9.16%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=86">ActiveRecord::Associations::Association#scoped</a> [47 calls, 197 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.57% (5.65%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#credits_required_in_subject</a> [11 calls, 33 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.54% (99.43%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#credits_required_in_subject</a> [11 calls, 33 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.32% (95.16%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=5">ActiveRecord::Delegation#map</a> [11 calls, 16 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.31% (99.73%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [11 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.31% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [11 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.26% (98.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [11 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.18% (97.96%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [11 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.17% (99.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [11 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.09% (98.02%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [11 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.09% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [11 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.84% (94.09%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [11 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.75% (97.48%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [11 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.73% (99.49%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.72% (99.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.71% (99.48%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.62% (97.77%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.62% (99.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.61% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.59% (99.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [11 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.39% (94.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [11 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 3.39% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [11 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 3.23% (95.29%) Mysql2::Client#query [11 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.33% (2.89%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/collection_proxy.rb&line=77">ActiveRecord::Associations::CollectionProxy#method_missing</a> [14 calls, 214 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.03% (86.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=13">ActiveRecord::Delegation#find_by_subject_area_id</a> [14 calls, 14 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.02% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=240">ActiveRecord::Relation#scoping</a> [14 calls, 478 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.02% (99.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/scoping.rb&line=60">ActiveRecord::Scoping::ClassMethods#with_scope</a> [14 calls, 478 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.99% (98.57%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/dynamic_matchers.rb&line=24">ActiveRecord::DynamicMatchers#method_missing</a> [14 calls, 15 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.92% (96.52%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=262">ActiveRecord::FinderMethods#find_by_attributes</a> [14 calls, 15 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.85% (96.26%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=114">ActiveRecord::FinderMethods#first</a> [14 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.85% (99.83%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=374">ActiveRecord::FinderMethods#find_first</a> [14 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.83% (99.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.83% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [14 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.78% (97.20%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.55% (87.24%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.55% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [14 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.51% (97.63%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.35% (89.21%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [14 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.34% (99.40%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [14 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.23% (91.66%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [14 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.23% (99.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [14 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.08% (87.95%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [14 calls, 327 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.84% (2.27%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#credits_required_in_grade</a> [4 calls, 12 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.83% (99.74%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=87">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#credits_required_in_grade</a> [4 calls, 12 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.73% (94.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=5">ActiveRecord::Delegation#map</a> [4 calls, 16 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.72% (99.51%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [4 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.72% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [4 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.70% (99.05%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [4 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.67% (98.12%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [4 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.67% (99.83%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [4 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.63% (98.11%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [4 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.63% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [4 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.44% (88.08%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [4 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.40% (97.15%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [4 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.38% (98.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.38% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.37% (98.87%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.29% (94.70%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.29% (99.82%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.29% (99.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.28% (99.27%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [4 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.21% (94.59%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [4 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.21% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [4 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.16% (96.12%) Mysql2::Client#query [4 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.29% (4.80%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=80">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#subject_areas</a> [1 calls, 4 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 4.29% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=80">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#subject_areas</a> [1 calls, 4 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.49% (57.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/memoizable.rb&line=80">DistrictAcademicPlan(id: integer, name: string, freshman_since: date, can_be_default: boolean, credits_needed: float, created_at: datetime, updated_at: datetime, type: string, district_id: integer)#subject_areas</a> [2 calls, 4 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.48% (99.70%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=5">ActiveRecord::Associations::SingularAssociation#reader</a> [1 calls, 743 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.48% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=52">ActiveRecord::Associations::Association#reload</a> [1 calls, 71 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.48% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=136">ActiveRecord::Associations::Association#load_target</a> [1 calls, 71 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.47% (99.78%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/singular_association.rb&line=41">ActiveRecord::Associations::SingularAssociation#find_target</a> [1 calls, 70 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.38% (96.37%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=86">ActiveRecord::Associations::Association#scoped</a> [1 calls, 197 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.37% (99.45%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association.rb&line=96">ActiveRecord::Associations::Association#association_scope</a> [1 calls, 197 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.37% (99.80%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/associations/association_scope.rb&line=16">ActiveRecord::Associations::AssociationScope#scope</a> [1 calls, 123 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.34% (98.81%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/spawn_methods.rb&line=128">ActiveRecord::SpawnMethods#apply_finder_options</a> [1 calls, 269 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 2.34% (99.90%) Kernel#clone [1 calls, 1875 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.76% (41.04%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/delegation.rb&line=5">ActiveRecord::Delegation#map</a> [1 calls, 16 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (88.45%) Array#map [1 calls, 8114 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.54% (99.06%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=4">ActiveRecord::Querying#find</a> [14 calls, 14 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.48% (95.84%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=95">ActiveRecord::FinderMethods#find</a> [14 calls, 17 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.47% (99.44%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=300">ActiveRecord::FinderMethods#find_with_ids</a> [14 calls, 16 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.46% (99.39%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=319">ActiveRecord::FinderMethods#find_one</a> [14 calls, 16 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.37% (93.54%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=114">ActiveRecord::FinderMethods#first</a> [14 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.37% (99.80%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/finder_methods.rb&line=374">ActiveRecord::FinderMethods#find_first</a> [14 calls, 162 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.35% (98.88%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=150">ActiveRecord::Relation#to_a</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.35% (99.93%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [14 calls, 947 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.29% (95.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation.rb&line=164">ActiveRecord::Relation#exec_queries</a> [14 calls, 463 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.14% (88.31%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=486">&lt;Class::ActiveRecord::Base&gt;#find_by_sql_with_trace_ActiveRecord_self_name_find_by_sql</a> [14 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.13% (99.29%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [14 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.04% (91.49%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/querying.rb&line=36">ActiveRecord::Querying#find_by_sql</a> [14 calls, 242 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.04% (99.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/explain.rb&line=24">ActiveRecord::Explain#logging_query_plan</a> [14 calls, 947 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.07% (2.31%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/routing/route_set.rb&line=212">#&lt;Module:0x00000103511810&gt;#bulk_accept_district_student_four_year_plan_courses_path</a> [2 calls, 2 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.07% (99.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/helpers/url_helper.rb&line=100">ActionView::Helpers::UrlHelper#url_for</a> [2 calls, 249 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.98% (95.56%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/core_ext/hash/keys.rb&line=24">Hash#symbolize_keys</a> [2 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.97% (99.87%) Kernel#dup [2 calls, 6377 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.97% (99.99%) Kernel#initialize_dup [2 calls, 6974 total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.88% (95.53%) Hash#initialize_copy [2 calls, 3935 total]
+</li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.77% (1.98%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/models/student.rb&line=56">Student(id: string, district_id: integer, last_name: string, first_name: string, home_campus_id: integer, choice_campus_id: integer, grade_level: string, cte_sis: integer, cte_actual: integer, cte_intent: integer, special_ed: boolean, esl: boolean, lep: boolean, at_risk: boolean, gt: boolean, economic_status: integer, special_ed_setting: integer, counselor_email: string, created_at: datetime, updated_at: datetime, leaver_code: integer, title_one: boolean, enrollment_status: string, ethnicity: string, migrant: integer, bilingual: integer, cte_actual_reason: string, cte_intent_reason: string, parent_portal_notification: boolean, import_home_campus: string, import_choice_campus: string, bulk_override_rule_already_applied: boolean, autoselected_district_study_program_id: integer)#next_year_courses_need_information?</a> [1 calls, 2 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (87.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/calculations.rb&line=56">ActiveRecord::Calculations#count</a> [1 calls, 5 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/calculations.rb&line=149">ActiveRecord::Calculations#calculate</a> [1 calls, 5 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.56% (99.84%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/calculations.rb&line=188">ActiveRecord::Calculations#perform_calculation</a> [1 calls, 5 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.53% (98.34%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/relation/calculations.rb&line=224">ActiveRecord::Calculations#execute_simple_calculation</a> [1 calls, 4 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.51% (98.86%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=29">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_value</a> [1 calls, 9 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.51% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=23">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_one</a> [1 calls, 9 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.51% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=58">ActiveRecord::ConnectionAdapters::QueryCache#select_all</a> [1 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (98.90%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/query_cache.rb&line=68">ActiveRecord::ConnectionAdapters::QueryCache#cache_sql</a> [1 calls, 327 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.91%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract/database_statements.rb&line=17">ActiveRecord::ConnectionAdapters::DatabaseStatements#select_all</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=223">ActiveRecord::ConnectionAdapters::Mysql2Adapter#select</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.92%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=214">ActiveRecord::ConnectionAdapters::Mysql2Adapter#exec_query</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.89%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/mysql2_adapter.rb&line=206">ActiveRecord::ConnectionAdapters::Mysql2Adapter#execute</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_mysql_adapter.rb&line=241">ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter#execute</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/active_record.rb&line=15">NewRelic::Agent::Instrumentation::ActiveRecord#log_with_newrelic_instrumentation</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.49% (99.79%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [1 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.46% (98.46%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activerecord-3.2.11/lib/active_record/connection_adapters/abstract_adapter.rb&line=274">ActiveRecord::ConnectionAdapters::AbstractAdapter#log</a> [1 calls, 208 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.46% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [1 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.44% (98.64%) Mysql2::Client#query [1 calls, 208 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.87% (3.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/template.rb&line=142">ActionView::Template#render</a> [1 calls, 12 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.87% (99.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [1 calls, 144 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 2.87% (99.96%) <a href="txmt://open?url=file:///Users/sam/workspace/web/eduthings/freshlook/app/views/layouts/application.html.erb&line=0">ActionView::CompiledTemplates#_app_views_layouts_application_html_erb__2381637567056776012_2165397280</a> [1 calls, 2 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.19% (41.36%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/helpers/rendering_helper.rb&line=18">ActionView::Helpers::RenderingHelper#render</a> [4 calls, 10 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.14% (96.55%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/renderer.rb&line=40">ActionView::Renderer#render_partial</a> [3 calls, 10 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.14% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/instrumentation/rails3/action_controller.rb&line=167">ActionView::PartialRenderer#render_with_newrelic</a> [3 calls, 10 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.12% (97.47%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/newrelic_rpm-3.5.4.34/lib/new_relic/agent/method_tracer.rb&line=235">NewRelic::Agent::MethodTracer::InstanceMethods::TraceExecutionScoped#trace_execution_scoped</a> [3 calls, 462 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.08% (97.22%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/partial_renderer.rb&line=220">ActionView::PartialRenderer#render</a> [3 calls, 10 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.07% (98.73%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/abstract_renderer.rb&line=37">ActionView::AbstractRenderer#instrument</a> [3 calls, 11 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.07% (99.94%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [3 calls, 144 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.07% (99.85%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications/instrumenter.rb&line=16">ActiveSupport::Notifications::Instrumenter#instrument</a> [3 calls, 340 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (97.99%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/renderer/partial_renderer.rb&line=254">ActionView::PartialRenderer#render_partial</a> [3 calls, 10 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.89%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_view/template.rb&line=142">ActionView::Template#render</a> [3 calls, 12 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="empty.png"> 1.05% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/notifications.rb&line=121">&lt;Module::ActiveSupport::Notifications&gt;#instrument</a> [3 calls, 144 total]
+<ul style="display:none"></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.06% (1.08%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/tagged_logging.rb&line=53">ActiveSupport::TaggedLogging#info</a> [1 calls, 15 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.06% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/tagged_logging.rb&line=46">ActiveSupport::TaggedLogging#add</a> [1 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.81%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/activesupport-3.2.11/lib/active_support/buffered_logger.rb&line=79">ActiveSupport::BufferedLogger#add</a> [1 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.97%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/logger.rb&line=363">Logger#add</a> [1 calls, 343 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.77%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/logger.rb&line=557">Logger::LogDevice#write</a> [1 calls, 342 total]
+<ul style="display:none"><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.05% (99.98%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/monitor.rb&line=208">MonitorMixin#mon_synchronize</a> [1 calls, 1343 total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.05% (99.63%) IO#write [1 calls, 342 total]
+</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="color01" style="display:block"><img class="toggle" src="plus.png"> 1.66% (1.66%) <a href="txmt://open?url=file:///Users/sam/.rvm/gems/ruby-1.9.3-p0@ipv3/gems/actionpack-3.2.11/lib/action_dispatch/middleware/static.rb&line=11">ActionDispatch::FileHandler#match?</a> [1 calls, 1 total]
+<ul style="display:none"><li class="color01" style="display:block"><img src="empty.png"> 1.66% (99.76%) &lt;Class::Dir&gt;#[] [1 calls, 1 total]
+</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul><div class="thread">Thread: 2209922300 (42.73% ~ 1.4350519180297852)</div><ul name="thread"><li class="color9" style="display:block"><img class="toggle" src="minus.png"> 100.00% (100.00%) <a href="txmt://open?url=file:///Users/sam/.rvm/rubies/ruby-1.9.3-p0/lib/ruby/1.9.1/webrick/utils.rb&line=177">WEBrick::Utils::TimeoutHandler#initialize</a> [1 calls, 1 total]
+<ul><li class="color9" style="display:block"><img src="empty.png"> 100.00% (100.00%) Kernel#sleep [3 calls, 3 total]
+</li></ul></li></ul><div id="sentinel"></div>
+</body></html>
