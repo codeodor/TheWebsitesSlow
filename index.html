@@ -178,6 +178,7 @@
   <div align="right">
     <small><a href="https://github.com/rdp/ruby-prof">ruby-prof @ github</a></small>
     <small><a href="resources/ruby-prof/ruby-prof-call-tree.html" target="example">example</a></small>
+    <small><a href="https://github.com/jruby/jruby/wiki/Profiling-jruby">jruby's got you covered</a></small>
   </div>
   <!-- 
     See the example for how to see where the call tree gets interesting
@@ -207,9 +208,19 @@
     </code>
   </div>
   <div class="code small">
+      <code>
+        # Create config/environments/profile.rb with at least these options:<br/>
+        config.cache_classes = true<br/>
+        config.cache_template_loading = true
+      </code>
+  </div>
+  <div class="code small">
     <code>
     # bundle install and restart with: rails s -e profile<br/>
     </code>
+  </div>
+  <div align="right">
+    <small><a href="https://github.com/rdp/ruby-prof">code from ruby-prof @ github</a></small>
   </div>
   <!-- 
     The docs mention you should create a profiling environment when you do this. I agree. The 
@@ -225,8 +236,6 @@
   <h3>specific lines of code</h3>
   <div class="code">
     <code>
-      require 'ruby-prof'<br/>
-      <br/>
       result = RubyProf.profile do<br/>
       &nbsp;&nbsp;...<br/>
       &nbsp;&nbsp;[code to profile]<br/>
@@ -237,9 +246,13 @@
       printer.print(STDOUT, {})<br/>
     </code>
   </div>
-  
+  <div align="right">
+    <small><a href="https://github.com/rdp/ruby-prof">code from ruby-prof @ github</a></small>
+  </div>
   <!-- 
-  
+    If you know what your looking for, or just want to see how a more 
+    granular section of code looks when profiled, you can use 
+    RubyProf like this.
   -->
 </section>
 
@@ -248,11 +261,26 @@
 <section>
   <h2>benchmark</h2>
   
-  <div class="code">
-    <code>
-      require 'benchmark'<br/>
-      puts Benchmark.measure { "a"*1_000_000 }
-    </code>
+  <div class="code small">
+    <code><pre>
+Benchmark.bm do |x|
+  x.report("find by id: ") { 
+    @student = Student.find_by_id(params[:student_id]) 
+  }
+  
+  x.report("find: ") { 
+    @student = @district.students.find(params[:student_id]) 
+  }
+end
+    </pre></code>
+  </div>
+  
+  <div class="code small">
+    <code><pre>
+       user     system      total        real
+find by id:   0.090000   0.000000   0.090000 (  1.352654)
+find:   0.030000   0.000000   0.030000 (  0.030710)
+    </pre></code>
   </div>
   
   <div align="right">
@@ -261,17 +289,9 @@
 </section>
 
 <section>
-  http://en.wikibooks.org/wiki/Ruby_Programming/Standard_Library/Profiler
-  profiling with ruby-prof https://github.com/rdp/ruby-prof 
-  https://github.com/tmm1/perftools.rb -- where does it fit?
-  <small>jruby has https://github.com/jruby/jruby/wiki/Profiling-jruby</small>
-</section>
-
-<section>
-  (rails perf tests: benchmarking, profiling)  
-  <div align="right">
-    <small><a href="http://guides.rubyonrails.org/performance_testing.html">rails performance testing docs</a></small>
-  </div>
+  <h2>Further Investigation</h2>
+  <h3 style="display: inline;"><a href="https://github.com/tmm1/perftools.rb">perftools.rb</a></h3> <a href="http://perftools-rb.rubyforge.org/examples/rails.gif" target="example">(example output)</a>
+  <h3><a href="http://guides.rubyonrails.org/performance_testing.html">rails performance testing</a></h3>
 </section>
 
 
@@ -293,14 +313,14 @@
   <h1>Server Issues</h1>
 </section>
 <section class="center-slide">
-  <h2>Memory Issues</h2>
+  <h2>Memory</h2>
 </section>
 <section>
   top - memory - threadsafe - puma
 </section>
 
 <section class="center-slide">
-  <h2>CPU Issues</h2>
+  <h2>CPU</h2>
 </section>
 <section class="center-slide">
   how many processors do you have * average page load times => max throughput
