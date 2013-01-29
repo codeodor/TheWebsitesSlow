@@ -345,10 +345,30 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 
 <section>
   <!-- most of Rails world is still on having multiple worker processes, but that should change -->
-  <h2>puma</h2>
+  <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
-    Uses threads instead of worker processes <!-- which saves a ton of RAM -->
+    Uses <h3 style="display: inline;">threads</h3> instead of worker processes
+    <!-- 
+      which saves a ton of RAM 
+    -->
   </div>
+  <div class="fragment subsection" style="margin-top: 0;">
+    <blockquote>
+      i.e., how a web server is supposed to work
+    </blockquote>
+    <cite>-Wes Gamble</cite>
+    <!-- 
+      and as our own Wes Gamble said "i.e., how a web server is supposed to work"
+    -->
+  </div>
+  <div align="right">
+    <small><a href="https://github.com/puma/puma">puma @ github</a></small>
+  </div>
+</section>
+
+<section>
+  <!-- most of Rails world is still on having multiple worker processes, but that should change -->
+  <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
     Use JRuby or Rubinius to take full advantage <!-- they use native threads, no GIL -->
   </div>

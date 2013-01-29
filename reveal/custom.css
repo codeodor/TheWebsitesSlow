@@ -4,7 +4,11 @@
   list-style-type: none;
 }
 
-
+cite {
+  text-align: right;
+  display: block;
+  margin-bottom: 40px;
+}
 
 .reveal ul.list li {
   font-size: 62px;
