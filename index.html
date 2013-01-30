@@ -301,6 +301,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 <section>
   <h2>Further Investigation</h2>
   <h3 style="display: inline;"><a href="https://github.com/tmm1/perftools.rb">perftools.rb</a></h3> <a href="http://perftools-rb.rubyforge.org/examples/rails.gif" target="example">(example output)</a>
+  <!-- perftools.rb also has a way to run in dev mode and only profile when you send the profile parameter with the request -->
   <h3><a href="http://guides.rubyonrails.org/performance_testing.html">rails performance testing</a></h3>
 </section>
 
@@ -380,7 +381,12 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   <!-- most of Rails world is still on having multiple worker processes, but that should change -->
   <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
-    Use JRuby or Rubinius to take full advantage <!-- they use native threads, no GIL -->
+    Use JRuby or Rubinius to take full advantage 
+    <!-- 
+      they use native threads, no GIL 
+      you will get some improvement with CRuby when doing things outside of Ruby like DB / disk work,
+      but you will get the full improvement with JRuby or Rubinius
+    -->
   </div>
   <div class="fragment subsection" style="margin-top: 0;">
     <div class="code">
@@ -401,7 +407,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   <h2>CPU</h2>
 </section>
 <section class="center-slide">
-  how many processors do you have * average page load times => max throughput
+  how many processor cores available for your app * average page load time (s) * 60 (s/min) => max throughput per minute
 </section>
 
 <section class="center-slide">
