@@ -406,11 +406,32 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 <section class="center-slide">
   <h2>CPU</h2>
 </section>
-<section class="center-slide">
-  how many processor cores available for your app * average page load time (s) * 60 (s/min) => max throughput per minute
+
+<section>
+  <br/>
+  # processor cores available / avg load time (s/page) * 60 (s/min)<br/>
+  =><br/>
+  <h2>max throughput in pages per minute</h2>
+  
+  <!-- 
+    It's not likely the code running once will be a problem for the CPU by itself,
+    but with a lot of requests happening at a time, it could be. That's where we 
+    need to consider the max throughput of our system.
+    
+    So say you have 4 cores and an average page load time of 1 second. Then you'll max 
+    out at around 240 requests per minute.
+    
+    It'll probably be a little less, because other stuff has to have a little time to run, but
+    you know that's the theoretical best you can do.
+    
+    If you're getting close to that, you can either add more CPUs (and RAM, if you're using 
+    multiple processes instead of threading), or need to figure out where you can trim
+    your response times.
+  -->
 </section>
 
 <section class="center-slide">
+  <!-- For that, you need a more -->
   <h1>Holistic View</h1>
 </section>
 
