@@ -444,9 +444,37 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
     </div>
 </section>
 
-<section class="center-slide">
-  new relic
+<section>
+  <h2 style="margin-bottom: 0;">new relic</h2>
+  <img src="images/newrelic.png" width="900" alt="example of a New Relic Graph"/>
+  <!--
+    You can view info about the app server performance and end user performance in the browser.
+    
+    Paid levels offer more stuff, including more details and historical performance.
+    
+    It starts off as sorted by most time consuming: not by slowest average. That was the same in 
+    request-log-analyzer.
+    
+    For a while I thought it was silly - why would I care where the most time is spent? 
+    
+    Well, because that's where you get big wins in performance: if a highly used action can 
+    be optimized, that's less time other actions have to wait before getting CPU time. 
+  -->
 </section>
+
+<section>
+  <h2>Whoever said hardware was cheaper than programmers?</h2>
+  <!-- 
+    And that's especially important when you're nearing your max throughput. In one of the 
+    projects recently, we took an already fast action which was used a ton down from averaging 250ms 
+    to about 125ms with a small change - it cost less than $100 to make the change, and it meant they 
+    didn't need to double their server costs just to get more processors.
+    
+    So maybe throwing more hardware at a performance problem is cheaper than a programmer 
+    without the right tools, or after you've already picked off the low-hanging fruit.
+  -->
+</section>
+
 
 <section class="center-slide">
   <h2>Roll your own</h2>
