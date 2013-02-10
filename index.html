@@ -463,7 +463,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 </section>
 
 <section>
-  <h2>Whoever said hardware was cheaper than programmers?</h2>
+  <h2>Who ever said hardware was cheaper than programmers?</h2>
   <!-- 
     And that's especially important when you're nearing your max throughput. In one of the 
     projects recently, we took an already fast action which was used a ton down from averaging 250ms 
@@ -481,14 +481,97 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 </section>
 
 <section>
-  rails metrics http://blog.plataformatec.com.br/2010/02/rails-metrics-know-what-is-happening-inside-your-rails-3-application/
+  <h3>
+  rails_metrics 
   vs.
-  https://github.com/nearinfinity/system-metrics
+  system-metrics
+  </h3>
+  <div class="fragment subsection">
+    <h2>Unmaintained?</h2>
+  </div>
+  <!-- 
+    and both mention they are not intended for production use, 
+    which is exactly where I'd want to use it
+    
+    With a little effort you could probably send a pull request and 
+    get them running on latest Rails
+  -->
 </section>
 <section>
+  statsd 
+  needs nodejs
+  and graphite
+  which needs python
+  
+  git clone git://github.com/etsy/statsd.git
+  cd statsd
+  
+  yak shaving:
+  # nodejs
+  brew install node # assuming you have/use homebrew
+  
+  # already had python due to it being packaged with MacOS, but if you don't have it, you'll need it
+  
+  # pip : python :: gem : ruby
+  sudo easy_install pip # if you don't already have pip
+
+  # virtualenv : python :: rvm : ruby
+  sudo pip install virtualenv # if you don't already have virtualenv
+  
+  virtualenv graphite # create virtual environment (will add graphite directory to keep isolation, I put it under statsd, but you could put wherever)
+  
+  source graphite/bin/activate # changes $PATH to put graphite/bin first so all calls to python stuff will use the virtual environment you set up; `deactivate` will undo
+  
+  # note: I use $PWD here because I put my virtualenv of "graphite" in the directory I was currently in. You will want to change it to make sure you are putting it in the virtualenv YOU used
+  pip install whisper --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/lib"
+  pip install carbon --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/lib"
+  pip install graphite-web --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/webapp"
+  
+  pushd graphite #again, this is where I installed it
+  git clone git://anongit.freedesktop.org/py2cairo 
+  cd py2cairo
+  ./waf configure --prefix=$VIRTUAL_ENV
+  ./waf build
+  ./waf install
+  cd ..
+  
+  
+  pip install django tagging django-tagging Twisted gunicorn whisper # for production you'll probably also want to add: mod_python and memcache
+  
+  curl https://launchpadlibrarian.net/104073214/check-dependencies.py > check-dependencies.py 
+  python check-dependencies.py # to see any other dependencies you'll need to install
+  
+  cd conf
+  cp carbon.conf.example carbon.conf
+  cp storage-schemas.conf.example storage-schemas.conf
+  cd ..
+  
+  cp webapp/graphite/local_settings.py.example webapp/graphite/local_settings.py
+  
+  # now open the local_settings.py and uncomment DATABASES= info, ensuring you change the name to point at where you installed graphite
+  
+  python webapp/graphite/manage.py syncdb # like rake db:create && rake db:migrate
+  
+  # see http://stackoverflow.com/a/7107521/28451 and modify the storage-schemas.conf file
+  
+  ./bin/carbon-cache.py start # start carbon
+  python webapp/graphite/manage.py runserver #start the django web app
+  
+  cd ..
+  node stats.js exampleConfig.js # start statsd! ... make sure to set the values for the 
+  
+  set up harness in your app (tell it to use real queue and whatnot if you have the queue and set StatsD.mode = :production if you are not really in production and want to have a look )
+  
+  
+  
   https://github.com/twinturbo/harness with https://github.com/etsy/statsd
   harness could be external with stathat or librato
 </section>
+
+<section>
+  <img src="images/statsd.png" alt="example of a StatsD Graph"/>
+</section>
+
 
 <section>
   system level: http://auxesis.github.com/visage/ with collectd
