@@ -430,6 +430,17 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   -->
 </section>
 
+<section>
+  <h2>Server Level Stats</h2> 
+  For your investigation: 
+  <h3>visage &amp; collectd</h3>
+  <div align="right">
+    <small><a href="http://auxesis.github.com/visage/ ">visage website</a></small>
+    <small><a href="http://collectd.org/">collectd website</a></small>
+  </div>
+</section>
+
+
 <section class="center-slide">
   <!-- For that, you need a more -->
   <h1>Holistic View</h1>
@@ -477,7 +488,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 
 
 <section class="center-slide">
-  <h2>Roll your own</h2>
+  <h2>Run your own</h2>
 </section>
 
 <section>
@@ -498,85 +509,76 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   -->
 </section>
 <section>
-  statsd 
-  needs nodejs
-  and graphite
-  which needs python
-  
-  git clone git://github.com/etsy/statsd.git
-  cd statsd
-  
-  yak shaving:
-  # nodejs
-  brew install node # assuming you have/use homebrew
-  
-  # already had python due to it being packaged with MacOS, but if you don't have it, you'll need it
-  
-  # pip : python :: gem : ruby
-  sudo easy_install pip # if you don't already have pip
+  <h3>ActiveSupport::Notifications</h3>
+  <div class="code">
+    <code style="font-size: 20px;"><pre>
+ActiveSupport::Notifications.instrument("render", :extra => :information) do
+  render :text => "Foo"
+end
 
-  # virtualenv : python :: rvm : ruby
-  sudo pip install virtualenv # if you don't already have virtualenv
-  
-  virtualenv graphite # create virtual environment (will add graphite directory to keep isolation, I put it under statsd, but you could put wherever)
-  
-  source graphite/bin/activate # changes $PATH to put graphite/bin first so all calls to python stuff will use the virtual environment you set up; `deactivate` will undo
-  
-  # note: I use $PWD here because I put my virtualenv of "graphite" in the directory I was currently in. You will want to change it to make sure you are putting it in the virtualenv YOU used
-  pip install whisper --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/lib"
-  pip install carbon --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/lib"
-  pip install graphite-web --install-option="--prefix=$PWD/graphite" --install-option="--install-lib=$PWD/graphite/webapp"
-  
-  pushd graphite #again, this is where I installed it
-  git clone git://anongit.freedesktop.org/py2cairo 
-  cd py2cairo
-  ./waf configure --prefix=$VIRTUAL_ENV
-  ./waf build
-  ./waf install
-  cd ..
-  
-  
-  pip install django tagging django-tagging Twisted gunicorn whisper # for production you'll probably also want to add: mod_python and memcache
-  
-  curl https://launchpadlibrarian.net/104073214/check-dependencies.py > check-dependencies.py 
-  python check-dependencies.py # to see any other dependencies you'll need to install
-  
-  cd conf
-  cp carbon.conf.example carbon.conf
-  cp storage-schemas.conf.example storage-schemas.conf
-  cd ..
-  
-  cp webapp/graphite/local_settings.py.example webapp/graphite/local_settings.py
-  
-  # now open the local_settings.py and uncomment DATABASES= info, ensuring you change the name to point at where you installed graphite
-  
-  python webapp/graphite/manage.py syncdb # like rake db:create && rake db:migrate
-  
-  # see http://stackoverflow.com/a/7107521/28451 and modify the storage-schemas.conf file
-  
-  ./bin/carbon-cache.py start # start carbon
-  python webapp/graphite/manage.py runserver #start the django web app
-  
-  cd ..
-  node stats.js exampleConfig.js # start statsd! ... make sure to set the values for the 
-  
-  set up harness in your app (tell it to use real queue and whatnot if you have the queue and set StatsD.mode = :production if you are not really in production and want to have a look )
-  
-  
-  
-  https://github.com/twinturbo/harness with https://github.com/etsy/statsd
-  harness could be external with stathat or librato
+ActiveSupport::Notifications.subscribe("render") do |*args|
+  events << ActiveSupport::Notifications::Event.new(*args)
+end</pre>
+    </code>
+  </div>
+  <div align="right">
+    <small><a href="http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html">ActiveSupport::Notifications docs</a></small>
+  </div>
+</section>
+
+
+<section>
+  <h2>harness<br/>&amp;<br/>statsd</h2>
+  <div align="right">
+    <small><a href="https://github.com/twinturbo/harness">harness @ github</a></small>
+    <small><a href="https://github.com/etsy/statsd">statsd @ github</a></small>
+  </div>
+  <!-- 
+    harness will let you easily instrument and send off to statsd (or other custom backend, if you prefer)
+  -->
 </section>
 
 <section>
   <img src="images/statsd.png" alt="example of a StatsD Graph"/>
+  <!--
+    You get a graph like this.
+  -->
 </section>
-
 
 <section>
-  system level: http://auxesis.github.com/visage/ with collectd
+  <h2>statsd requirements</h2>
+  <ul>
+    <li>needs nodejs</li>
+    <li>graphite</li>
+    <li>which needs django, carbon, and other packages</li>
+    <li>which all run on python</li>
+  </ul>
 </section>
 
+<section>
+  <h3><a href="https://gist.github.com/codeodor/4758690" target="epicyakshave" style="line-height: 80px;">epic yak shaving</a></h3>
+  <img src="images/yak.png" alt="Yak shaving" style="border: 0;"/>
+  <div align="right">
+    <small><a href="http://www.flickr.com/photos/snapperwolf/6952219933/" target="flickr">image from snapperwolf @ flickr</a></small>
+  </div>
+</section>
+
+<section>
+  <img src="images/statsd.png" alt="example of a StatsD Graph"/>
+  <!--
+    If you just use harness and do not provide your own subscribers, you don't get 
+    much useful data for performance purposes - all views show up under one stat 
+    and you can't drill into.
+    
+    So obviously this is not enough to replace what you'd get with newrelic, but it's 
+    worth some more exploration. 
+  -->
+</section>
+
+<section>
+  <h2>This Needs To Be Easier</h2>
+  But I don't have the answers yet
+</section>
 
 <section>
   <h2>OMG Thanks!</h2>
