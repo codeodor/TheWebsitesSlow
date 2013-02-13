@@ -674,9 +674,11 @@ end</pre>
 <div class="progress"><span></span></div>
 
 </div>
+    <script src="libraries/comments.jquery.js"></script> 
     <script src="libraries/head.min.js"></script>
-
+    
     <script>
+      
       // Scripts that should be loaded before initializing
       var scripts = [];
 
@@ -711,6 +713,12 @@ end</pre>
         // Fires each time a new slide is activated
         Reveal.addEventListener( 'slidechanged', function( event ) {
           // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+          $('.comments').remove();
+          var comments = $(event.currentSlide).comments();
+          comments.each(function(index, comment){
+            $('body').append(comment);
+          });
+          
           moveHearts();
         } );
 
