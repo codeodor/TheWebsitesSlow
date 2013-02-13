@@ -376,18 +376,21 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
     almost all of the RAM. There are 4 processors, but we can only utilize two 
     for incoming web requests, because of the RAM issue.
     
-    So, you need more RAM, or to consume less
+    So, you need more RAM, or to consume less.
   -->
 </section>
 
 <section>
-  <!-- most of Rails world is still on having multiple worker processes, but that should change -->
+  
   <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
     Uses <h3 style="display: inline;">threads</h3> instead of worker processes
   </div>
   
   <!-- 
+  
+    Most of Rails world is still on having multiple worker processes, but that should change.
+  
     Using threads for concurrency saves a ton of RAM over worker processes, because they share 
     the same copy of the app in memory.
   -->
