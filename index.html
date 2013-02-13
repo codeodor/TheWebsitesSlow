@@ -50,7 +50,7 @@
     </div>
     <div class="fragment subsection">
       <h3>6 years playing with Rails</h3>
-      <!-- Until I recently looked it up, apparently I've had 4 for the last 3 -->
+      <!-- Until I recently looked it up, apparently I've had 4 for the last couple of years -->
     </div>
     <div class="fragment subsection">
       <h3>4 projects recently needed P.E.D.</h3>
@@ -92,10 +92,17 @@
 
 <section>
   <img src="images/nplus1.png" alt="n+1 queries in an action" width="900"/>
+  <!--
+    A query where you're pulling a bunch of rows, and then executing another query 
+    to get an associated record for each row.
+  -->
 </section>
 
 <section>
   <img src="images/slowquery.png" alt="slow query in an action" width="900"/>
+  <!-- 
+    A slow query where you may just tune it with indexes.
+  -->
 </section>
 
 <section>
@@ -113,6 +120,9 @@
       columns you have to transfer
     </span>
   </p>
+  <!--
+    So maybe you just select only the columns you need.
+  -->
 </section>
 
 <section class="center-slide">
@@ -132,7 +142,9 @@
     <h2>Visibility</h2>
   </div>
   <!-- 
-    But rather than looking through the pollution of the entire log file, there are some tools 
+    When looking through the logs there is a lot of noise: too much is irrelevant.
+    
+    So rather than looking through the pollution of the entire log file, there are some tools 
     to help you make these problems and measurements more visible.
   --> 
 </section>
@@ -173,13 +185,17 @@
     <small><a href="https://github.com/pboling/rack-insight" target="rackinsight">rack-insight @ github</a></small>
   </div>
   <!-- 
-    Works as a rack middleware with all kinds of cool options, but looks to need some more 
-    work. I'd like to use it once I can spare enough time to contribute back to the project
+    Works as a rack middleware with all kinds of cool options, and is similar to rails-footnotes, so 
+    you might check it out to see if it works better for your needs/wants.
   -->
 </section>
 
 <section class="center-slide">
   <h2>Granularity</h2>
+  <!-- 
+    Oftentimes your performance issue is not with a specific view or query that Rails logs, so 
+    you'll want to have some tools to help you find those as well.
+  -->
 </section>
 
 <section>
@@ -191,8 +207,14 @@
     <small><a href="https://github.com/jruby/jruby/wiki/Profiling-jruby" target="jrubyprof">jruby's got you covered</a></small>
   </div>
   <!-- 
-    See the example for how to see where the call tree gets interesting
-    There are a couple of ways to use it in your rails app
+    See the example for how to see where the call tree gets interesting. The % reported on each line show:
+    percent of the entire profiled time contained in this method call (percent of the parent in parenthesis)
+    
+    Where those numbers start to diverge is where you'll find places you can look to improve performance.
+    
+    There are a couple of ways to use it in your rails app.
+    
+    The ruby-prof gem does not work with jruby, but jruby has its own profiler.
   -->
 </section>
 
@@ -237,6 +259,7 @@
     standard ruby profiler is slow because it's pure ruby, and ruby prof is faster because it's 
     a C extension. But it's still slow, so you don't want to always have it running in development
     mode.
+    
   -->
 </section>
 
@@ -294,7 +317,8 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   </div>
   <!--
     Profiling is more for helping you find the issue, run once, whereas benchmarking runs 
-    several times and reports averages.
+    several times and reports averages that are a better way to prove your changes improved
+    the performance, rather than relying on your gut feelings.
   -->
   <div align="right">
     <small><a href="http://www.ruby-doc.org/stdlib-1.9.3/libdoc/benchmark/rdoc/Benchmark.html" target="benchmark">benchmark docs</a></small>
@@ -363,7 +387,8 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   <div class="fragment subsection" style="margin-top: 0;">
     Uses <h3 style="display: inline;">threads</h3> instead of worker processes
     <!-- 
-      which saves a ton of RAM 
+      Using threads for concurrency saves a ton of RAM over worker processes, because they share 
+      the same copy of the app in memory.
     -->
   </div>
   <div class="fragment subsection" style="margin-top: 0;">
@@ -381,7 +406,6 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 </section>
 
 <section>
-  <!-- most of Rails world is still on having multiple worker processes, but that should change -->
   <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
     Use JRuby or Rubinius to take full advantage 
@@ -398,7 +422,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
       config.threadsafe!
       </code>
     </div>
-    <!-- until it's removed or on by default after Rails 4 -->
+    <!-- You need to tell Rails to run in threadsafe mode until that option is removed or on by default after Rails 4 (I think Rails 4 decided to do this, did not confirm though) -->
   </div>
   <div align="right">
     <small><a href="https://github.com/puma/puma" target="puma">puma @ github</a></small>
@@ -425,7 +449,7 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
     out at around 240 requests per minute.
     
     It'll probably be a little less, because other stuff has to have a little time to run, but
-    you know that's the theoretical best you can do.
+    you know that's the theoretical best on average you can do.
     
     If you're getting close to that, you can either add more CPUs (and RAM, if you're using 
     multiple processes instead of threading), or need to figure out where you can trim
@@ -456,6 +480,12 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
       <small><a href="resources/rla_output.html" target="example">example output</a></small>
       <small><a href="https://github.com/wvanbergen/request-log-analyzer/wiki" target="rlawiki">r-l-a wiki @ github</a></small>
     </div>
+    <!-- 
+      The most interesting things in the example to me are:
+      
+      1. The daily hit rate averaged by hour, because if you know the max throughput and it's close to that per hour, you can see where you might need to dynamically scale up.
+      2. The reported actions by sum of processing time, because even if it's already a fast action, if you're near max throughput if you can shave that time down, it's like gaining extra processors. 
+    -->
 </section>
 
 <section>
@@ -496,11 +526,14 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
     <h2>Unmaintained?</h2>
   </div>
   <!-- 
-    and both mention they are not intended for production use, 
-    which is exactly where I'd want to use it
+    And both mention they are not intended for production use, 
+    which is exactly where I'd want to use it. But you can probably also 
+    switch out the backend and have it do the log in a different thread, 
+    which I think would limit most negatives as far as running 
+    in production.
     
     With a little effort you could probably send a pull request and 
-    get them running on latest Rails
+    get them running on latest Rails. It's a good place to start, anyway.
   -->
 </section>
 <section>
@@ -516,6 +549,12 @@ ActiveSupport::Notifications.subscribe("render") do |*args|
 end</pre>
     </code>
   </div>
+  <!-- 
+    First block shows how you can make your own notifications, while the second block 
+    shows how you can subscribe. Leave off the ("render") argument to #subscribe, and
+    you'll subscribe to all of them. Then you can see what all Rails is giving you by 
+    default, and narrow down to your needs/interests from there.
+  -->
   <div align="right">
     <small><a href="http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html" target="as_notifications">ActiveSupport::Notifications docs</a></small>
   </div>
@@ -556,6 +595,10 @@ end</pre>
   <div align="right">
     <small><a href="http://www.flickr.com/photos/snapperwolf/6952219933/" target="flickr">image from snapperwolf @ flickr</a></small>
   </div>
+  <!--
+    Lots of effort: could have easily paid for 1 year of New Relic pro plan using the time it took 
+    me to get this silly little graph.
+  -->
 </section>
 
 <section>
