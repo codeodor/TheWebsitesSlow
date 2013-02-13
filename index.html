@@ -335,7 +335,6 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
 
 <section>
   <img src="images/slow.png" height="500" alt="The customer tells you 'The website is slow'"/>
-  <!-- from iphonetextgenerator.com -->
 </section>
 
 <section>
@@ -386,19 +385,18 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
     Uses <h3 style="display: inline;">threads</h3> instead of worker processes
-    <!-- 
-      Using threads for concurrency saves a ton of RAM over worker processes, because they share 
-      the same copy of the app in memory.
-    -->
   </div>
+  
+  <!-- 
+    Using threads for concurrency saves a ton of RAM over worker processes, because they share 
+    the same copy of the app in memory.
+  -->
+  
   <div class="fragment subsection" style="margin-top: 0;">
     <blockquote>
       i.e., how a web server is supposed to work
     </blockquote>
     <cite>-Wes Gamble</cite>
-    <!-- 
-      and as our own Wes Gamble said "i.e., how a web server is supposed to work"
-    -->
   </div>
   <div align="right">
     <small><a href="https://github.com/puma/puma" target="puma">puma @ github</a></small>
@@ -409,11 +407,6 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
   <h2 style="margin-bottom: 0;">puma</h2>
   <div class="fragment subsection" style="margin-top: 0;">
     Use JRuby or Rubinius to take full advantage 
-    <!-- 
-      they use native threads, no GIL 
-      you will get some improvement with CRuby when doing things outside of Ruby like DB / disk work,
-      but you will get the full improvement with JRuby or Rubinius
-    -->
   </div>
   <div class="fragment subsection" style="margin-top: 0;">
     <div class="code">
@@ -422,8 +415,14 @@ find:   0.030000   0.000000   0.030000 (  0.030710)
       config.threadsafe!
       </code>
     </div>
-    <!-- You need to tell Rails to run in threadsafe mode until that option is removed or on by default after Rails 4 (I think Rails 4 decided to do this, did not confirm though) -->
   </div>
+  <!-- 
+    they use native threads, no GIL 
+    you will get some improvement with CRuby when doing things outside of Ruby like DB / disk work,
+    but you will get the full improvement with JRuby or Rubinius
+  
+    You need to tell Rails to run in threadsafe mode until that option is removed or on by default after Rails 4 (I think Rails 4 decided to do this, did not confirm though) 
+  -->
   <div align="right">
     <small><a href="https://github.com/puma/puma" target="puma">puma @ github</a></small>
   </div>
